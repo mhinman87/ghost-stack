@@ -1,6 +1,6 @@
 /* ============================================================
-   Ghost Stack — style.css
-   Dark theme, Varela Round, violet accent (#8b5cf6)
+   Ice Cap Labs — style.css
+   Dark theme, Outfit, sky-blue accent (#0ea5e9)
    ============================================================ */
 
 /* ── Reset & base ─────────────────────────────────────────── */
@@ -11,7 +11,6 @@
 }
 
 html {
-  scroll-behavior: smooth;
   font-size: 16px;
 }
 
@@ -23,22 +22,22 @@ html {
   --bg-card:    #1a1e35;
   --bg-card-hover: #1f2440;
 
-  --border-subtle: rgba(139,92,246,0.15);
-  --border-hover:  rgba(139,92,246,0.45);
+  --border-subtle: rgba(14,165,233,0.15);
+  --border-hover:  rgba(14,165,233,0.45);
   --border-dim:    rgba(255,255,255,0.07);
 
-  --accent:        #8b5cf6;
-  --accent-bright: #a78bfa;
-  --accent-dim:    rgba(139,92,246,0.18);
-  --accent-glow:   rgba(139,92,246,0.28);
+  --accent:        #0ea5e9;
+  --accent-bright: #38bdf8;
+  --accent-dim:    rgba(14,165,233,0.18);
+  --accent-glow:   rgba(14,165,233,0.28);
 
-  --text-primary:   #f1f0ff;
+  --text-primary:   #f0f9ff;
   --text-secondary: #9b97c4;
   --text-muted:     #5a5680;
 }
 
 body {
-  font-family: 'Varela Round', sans-serif;
+  font-family: 'Outfit', sans-serif;
   background: var(--bg-void);
   color: var(--text-secondary);
   line-height: 1.7;
@@ -51,30 +50,6 @@ a { text-decoration: none; color: inherit; }
 ul { list-style: none; }
 button { font-family: inherit; }
 
-/* ── Custom cursor ────────────────────────────────────────── */
-#cursor-dot,
-#cursor-ring {
-  position: fixed;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0;
-  will-change: transform;
-  transition: opacity 0.2s ease;
-}
-#cursor-ring { z-index: 9998; }
-
-.cursor-inner {
-  display: inline-block;
-  transform-origin: center;
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-@media (pointer: coarse) {
-  #cursor-dot, #cursor-ring { display: none !important; }
-  body { cursor: auto !important; }
-}
 
 /* ── Container & layout utilities ───────────────────────────*/
 .container {
@@ -95,17 +70,17 @@ section {
   color: #fff;
   border: none;
   border-radius: 10px;
-  font-family: 'Varela Round', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-size: 0.9rem;
   letter-spacing: 0.03em;
-  cursor: none;
+  cursor: pointer;
   transition: opacity 0.2s, box-shadow 0.2s;
-  box-shadow: 0 0 28px rgba(139,92,246,0.4);
+  box-shadow: 0 0 28px rgba(14,165,233,0.4);
   white-space: nowrap;
 }
 .btn-primary:hover {
   opacity: 0.88;
-  box-shadow: 0 0 44px rgba(139,92,246,0.55);
+  box-shadow: 0 0 44px rgba(14,165,233,0.55);
 }
 
 .btn-secondary {
@@ -115,10 +90,10 @@ section {
   color: var(--text-primary);
   border: 1px solid var(--border-dim);
   border-radius: 10px;
-  font-family: 'Varela Round', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-size: 0.9rem;
   letter-spacing: 0.03em;
-  cursor: none;
+  cursor: pointer;
   transition: border-color 0.2s, background 0.2s;
   white-space: nowrap;
 }
@@ -161,7 +136,7 @@ section {
   font-size: 1rem;
   color: var(--text-primary);
   letter-spacing: 0.02em;
-  cursor: none;
+  cursor: pointer;
 }
 .nav-logo:hover { color: var(--accent-bright); }
 
@@ -179,7 +154,7 @@ section {
   color: var(--text-secondary);
   letter-spacing: 0.04em;
   transition: color 0.2s;
-  cursor: none;
+  cursor: pointer;
 }
 .nav-links a:hover { color: var(--accent-bright); }
 
@@ -202,7 +177,7 @@ section {
   height: 36px;
   background: none;
   border: none;
-  cursor: none;
+  cursor: pointer;
   padding: 4px;
 }
 @media (min-width: 768px) {
@@ -256,7 +231,7 @@ section {
 /* ── Hero ─────────────────────────────────────────────────── */
 #hero {
   position: relative;
-  min-height: 100vh;
+  min-height: 160vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -265,32 +240,31 @@ section {
   padding: 64px clamp(1rem, 4vw, 2rem) clamp(4rem, 8vw, 6rem);
 }
 
-#cursor-spotlight {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.hero-ambient {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  background: radial-gradient(ellipse 500px 400px at 80% 15%,
-    rgba(139,92,246,0.10) 0%,
-    transparent 70%);
-}
-
 #parallax-container {
   position: absolute;
   inset: 0;
-  overflow: hidden;
   z-index: 0;
   pointer-events: none;
-  width: 100%;
-  height: 100%;
 }
+
+.parallax-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover;
+  background-repeat: no-repeat;
+  will-change: transform;
+  pointer-events: none;
+}
+
+.layer-6 { background-image: url('parallax-6.png'); background-position: center center; z-index: 1; }
+.layer-5 { background-image: url('parallax-5.png'); background-position: bottom center; z-index: 2; top: 100px; }
+.layer-4 { background-image: url('parallax-4.png'); background-position: bottom center; z-index: 3; top: 200px; }
+.layer-3 { background-image: url('parallax-3.png'); background-position: bottom center; z-index: 4; top: 300px; }
+.layer-2 { background-image: url('parallax-2.png'); background-position: bottom center; z-index: 5; top: 400px; }
+.layer-1 { background-image: url('parallax-1.png'); background-position: bottom center; z-index: 6; top: 500px; }
 
 .hero-content {
   position: relative;
@@ -299,6 +273,8 @@ section {
   width: 100%;
   text-align: center;
   margin: 0 auto;
+  margin-top: -10vh; /* pull content up so treeline frames it below */
+  color: #000;
 }
 
 .eyebrow-pill {
@@ -307,7 +283,7 @@ section {
   background: var(--accent-dim);
   border: 1px solid var(--border-subtle);
   border-radius: 100px;
-  color: var(--accent-bright);
+  color: #000;
   font-size: 0.7rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -316,14 +292,14 @@ section {
 
 .hero-title {
   font-size: clamp(2.4rem, 7vw, 4.8rem);
-  color: var(--text-primary);
+  color: #000;
   line-height: 1.1;
   margin-bottom: 1.5rem;
 }
 
 .hero-subtitle {
   font-size: clamp(1rem, 2.2vw, 1.175rem);
-  color: var(--text-secondary);
+  color: #000;
   max-width: 620px;
   margin: 0 auto 2.5rem;
   line-height: 1.75;
@@ -360,7 +336,7 @@ section {
 
 .trust-text {
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: #000;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -395,8 +371,17 @@ section {
 }
 
 /* ── Services ─────────────────────────────────────────────── */
+#services,
+#process,
+#why,
+#contact,
+footer {
+  position: relative;
+  z-index: 10;
+}
+
 #services {
-  background: var(--bg-deep);
+  background: #000000;
 }
 
 .services-grid {
@@ -422,7 +407,7 @@ section {
 .service-card:hover {
   border-color: var(--border-hover);
   transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(139,92,246,0.15);
+  box-shadow: 0 12px 40px rgba(14,165,233,0.15);
 }
 
 .service-icon-wrap {
@@ -438,7 +423,7 @@ section {
   flex-shrink: 0;
 }
 .service-card:hover .service-icon-wrap {
-  background: rgba(139,92,246,0.30);
+  background: rgba(14,165,233,0.30);
 }
 
 .service-card h3 {
@@ -489,7 +474,7 @@ section {
     left: calc(50% + 28px);
     right: calc(-50% + 28px);
     height: 1px;
-    background: linear-gradient(to right, var(--accent), rgba(139,92,246,0.15));
+    background: linear-gradient(to right, var(--accent), rgba(14,165,233,0.15));
     pointer-events: none;
   }
 }
@@ -536,7 +521,7 @@ section {
   line-height: 1.7;
 }
 
-/* ── Why Ghost Stack ──────────────────────────────────────── */
+/* ── Why Ice Cap Labs ─────────────────────────────────────── */
 #why {
   background: var(--bg-deep);
 }
@@ -575,7 +560,7 @@ section {
   margin-top: 0.1rem;
   transition: background 0.2s;
 }
-.why-item:hover .why-icon { background: rgba(139,92,246,0.30); }
+.why-item:hover .why-icon { background: rgba(14,165,233,0.30); }
 
 .why-item h3 {
   font-size: 0.95rem;
@@ -616,7 +601,7 @@ section {
   width: 400px;
   height: 200px;
   background: radial-gradient(ellipse at center,
-    rgba(139,92,246,0.25) 0%,
+    rgba(14,165,233,0.25) 0%,
     transparent 70%);
   pointer-events: none;
 }
@@ -653,12 +638,12 @@ section {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: 10px;
-  font-family: 'Varela Round', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-size: 0.9rem;
   color: var(--text-primary);
   outline: none;
   transition: border-color 0.2s;
-  cursor: none;
+  cursor: pointer;
 }
 .form-row input[type="email"]::placeholder { color: var(--text-muted); }
 .form-row input[type="email"]:focus { border-color: var(--accent); }
@@ -717,7 +702,7 @@ section {
   font-size: 0.875rem;
   color: var(--text-secondary);
   transition: color 0.2s;
-  cursor: none;
+  cursor: pointer;
 }
 .footer-links a:hover { color: var(--accent-bright); }
 
@@ -727,7 +712,7 @@ section {
   color: var(--accent-bright);
   margin-bottom: 1.25rem;
   transition: color 0.2s;
-  cursor: none;
+  cursor: pointer;
 }
 .footer-email:hover { color: var(--accent); }
 
@@ -747,7 +732,7 @@ section {
   border-radius: 8px;
   color: var(--text-secondary);
   transition: border-color 0.2s, color 0.2s, background 0.2s;
-  cursor: none;
+  cursor: pointer;
 }
 .social-icon:hover {
   border-color: var(--accent);
@@ -777,7 +762,7 @@ section {
 /* ── Accessibility ────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .parallax-shape { transform: translate(-50%, -50%) !important; }
+  .parallax-layer { transform: none !important; }
   * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
