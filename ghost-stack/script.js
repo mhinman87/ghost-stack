@@ -19,12 +19,14 @@ function initParallax() {
   const layers = document.querySelectorAll('[data-speed]');
   if (!layers.length) return;
 
-  // Trim page height to account for parallax compression
-  const maxSpeed = 0.75;
+  // Trim main height to account for parallax compression.
+  const main = document.querySelector('main');
   const hero = document.getElementById('hero');
-  if (hero) {
-    const extraSpace = (document.body.scrollHeight - hero.offsetHeight) * maxSpeed * 0.45;
-    document.body.style.marginBottom = -extraSpace + 'px';
+  if (main && hero) {
+    const contentBelow = main.scrollHeight - hero.offsetHeight;
+    const trimmed = hero.offsetHeight + contentBelow * 0.55;
+    main.style.height = trimmed + 'px';
+    main.style.overflow = 'hidden';
   }
 
   window.addEventListener('scroll', () => {
