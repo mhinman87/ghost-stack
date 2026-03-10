@@ -778,3 +778,194 @@ input:focus-visible {
   outline-offset: 3px;
   border-radius: 4px;
 }
+
+/* ── Inner pages ─────────────────────────────────────────── */
+.page-header {
+  padding: calc(64px + 4rem) clamp(1rem, 4vw, 2rem) clamp(3rem, 6vw, 5rem);
+  text-align: center;
+  background: var(--bg-void);
+}
+
+.page-title {
+  font-size: clamp(2.5rem, 7vw, 5rem);
+  color: var(--text-primary);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.25rem;
+}
+
+.page-subtitle {
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  color: var(--text-secondary);
+  max-width: 580px;
+  margin: 0 auto;
+  line-height: 1.75;
+}
+
+/* ── Service blocks (Ghost Labs inspired) ────────────────── */
+.blocks-section {
+  padding: clamp(3rem, 6vw, 5rem) clamp(1rem, 4vw, 2rem);
+}
+
+.blocks-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.service-block {
+  padding: clamp(2rem, 4vw, 3rem) 0;
+  border-bottom: 1px solid var(--border-dim);
+  cursor: default;
+  transition: background 0.3s;
+}
+.service-block:last-child {
+  border-bottom: none;
+}
+
+.block-inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+@media (min-width: 768px) {
+  .block-inner {
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+  }
+}
+
+.block-number {
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.75rem;
+}
+
+.block-title {
+  font-size: clamp(1.75rem, 4vw, 3rem);
+  color: var(--text-muted);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  transition: color 0.5s;
+}
+.service-block:hover .block-title {
+  color: var(--text-primary);
+}
+
+.block-desc {
+  font-size: 1rem;
+  color: var(--text-muted);
+  line-height: 1.75;
+  transition: color 0.5s;
+}
+.service-block:hover .block-desc {
+  color: var(--text-secondary);
+}
+
+.block-list {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.block-list li {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  padding-left: 1.25rem;
+  position: relative;
+  line-height: 1.6;
+  transition: color 0.5s;
+}
+.service-block:hover .block-list li {
+  color: var(--text-secondary);
+}
+.block-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.4;
+  transition: opacity 0.5s;
+}
+.service-block:hover .block-list li::before {
+  opacity: 1;
+}
+
+/* Step number large */
+.step-number-lg {
+  font-size: clamp(3rem, 8vw, 6rem);
+  color: var(--accent);
+  opacity: 0.15;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+  transition: opacity 0.5s;
+}
+.service-block:hover .step-number-lg {
+  opacity: 0.4;
+}
+
+/* ── Inner page CTA section ──────────────────────────────── */
+.page-cta {
+  padding: clamp(4rem, 8vw, 6rem) clamp(1rem, 4vw, 2rem);
+  text-align: center;
+  background: var(--bg-deep);
+}
+
+.page-cta h2 {
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.page-cta p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  max-width: 480px;
+  margin: 0 auto 2rem;
+  line-height: 1.75;
+}
+
+/* ── What to expect (contact page) ───────────────────────── */
+.expect-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+@media (min-width: 640px) {
+  .expect-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.expect-item {
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.expect-number {
+  font-size: 2rem;
+  color: var(--accent);
+  font-weight: 700;
+  opacity: 0.3;
+  margin-bottom: 0.75rem;
+}
+
+.expect-item h3 {
+  font-size: 1rem;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.expect-item p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}

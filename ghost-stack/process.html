@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How It Works — Ice Cap Labs</title>
+  <meta name="description" content="Our clear, four-step process from discovery to growth. No black boxes, no jargon." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── Process Page Specific ─────────────────────────────────── */
+    .page-header {
+      text-align: center;
+      padding: clamp(7rem, 14vw, 10rem) clamp(1rem, 4vw, 2rem) clamp(3rem, 6vw, 5rem);
+      background: var(--bg-void);
+    }
+
+    .page-header .section-eyebrow {
+      margin-bottom: 1rem;
+    }
+
+    .page-title {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      color: var(--text-primary);
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+    }
+
+    .page-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      max-width: 560px;
+      margin: 0 auto;
+      line-height: 1.75;
+    }
+
+    .process-detail-section {
+      background: var(--bg-void);
+      padding: 0 clamp(1rem, 4vw, 2rem) clamp(4rem, 8vw, 7rem);
+    }
+
+    .process-blocks {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .service-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: clamp(2rem, 4vw, 3rem);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .service-block:hover {
+      border-color: var(--border-hover);
+      box-shadow: 0 12px 48px rgba(14,165,233,0.12);
+    }
+
+    .service-block:hover .block-title {
+      color: var(--text-primary);
+    }
+
+    .service-block:hover .block-desc {
+      color: var(--text-secondary);
+    }
+
+    .service-block:hover .step-number-lg {
+      color: var(--accent-bright);
+      border-color: var(--accent-bright);
+    }
+
+    .service-block:hover .block-includes li {
+      color: var(--text-secondary);
+    }
+
+    .step-number-lg {
+      font-size: clamp(2.5rem, 5vw, 3.5rem);
+      font-weight: 700;
+      color: var(--text-muted);
+      line-height: 1;
+      margin-bottom: 1rem;
+      display: inline-block;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--text-muted);
+      transition: color 0.3s, border-color 0.3s;
+    }
+
+    .block-title {
+      font-size: clamp(1.35rem, 3vw, 1.75rem);
+      color: var(--text-muted);
+      margin-bottom: 0.85rem;
+      transition: color 0.3s;
+    }
+
+    .block-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+      max-width: 680px;
+      margin-bottom: 1.5rem;
+      transition: color 0.3s;
+    }
+
+    .block-includes-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-bright);
+      margin-bottom: 0.75rem;
+    }
+
+    .block-includes {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .block-includes {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .block-includes li {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      padding-left: 1.25rem;
+      position: relative;
+      transition: color 0.3s;
+    }
+
+    .block-includes li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.55em;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav id="site-nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo" aria-label="Ice Cap Labs home">
+        <img src="yeti-transparent.png" alt="Ice Cap Labs" width="50" height="50" />
+        <span>Ice Cap Labs</span>
+      </a>
+
+      <div class="nav-links" id="nav-links">
+        <a href="services.html">Services</a>
+        <a href="process.html">How It Works</a>
+        <a href="about.html">About</a>
+        <a href="contact.html" class="nav-cta">Get Started</a>
+      </div>
+
+      <button class="nav-burger" id="nav-burger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+
+    <div class="nav-mobile-menu" id="nav-mobile-menu" aria-hidden="true">
+      <a href="services.html">Services</a>
+      <a href="process.html">How It Works</a>
+      <a href="about.html">About</a>
+      <a href="contact.html" class="nav-mobile-cta">Get Started</a>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <p class="section-eyebrow">How It Works</p>
+      <h1 class="page-title">A Clear Path Forward</h1>
+      <p class="page-subtitle">
+        No black boxes, no endless discovery calls. We follow a straightforward,
+        four-step process that moves efficiently from understanding your business
+        to building and launching things that work.
+      </p>
+    </div>
+
+    <!-- PROCESS STEPS -->
+    <section class="process-detail-section">
+      <div class="process-blocks">
+
+        <!-- STEP 01 — Discover -->
+        <div class="service-block">
+          <div class="step-number-lg">01</div>
+          <h2 class="block-title">Discover</h2>
+          <p class="block-desc">
+            Every engagement starts with listening. We learn your business model, your
+            customers, your goals, and the gaps standing between where you are and where
+            you want to be. No jargon, no assumptions — just an honest assessment of
+            what technology can do for you right now.
+          </p>
+          <p class="block-includes-label">What's Included</p>
+          <ul class="block-includes">
+            <li>In-depth business and goals interview</li>
+            <li>Current technology and workflow audit</li>
+            <li>Competitor and market landscape review</li>
+            <li>Identification of quick wins and high-impact opportunities</li>
+            <li>Stakeholder alignment session</li>
+            <li>Written discovery summary and recommendations</li>
+          </ul>
+        </div>
+
+        <!-- STEP 02 — Design -->
+        <div class="service-block">
+          <div class="step-number-lg">02</div>
+          <h2 class="block-title">Design</h2>
+          <p class="block-desc">
+            With a clear understanding of your business, we architect a technology
+            strategy tailored to your size, your customers, and your budget. Every
+            recommendation is practical — nothing speculative, nothing you don't need.
+            You see the full plan before a single line of code is written.
+          </p>
+          <p class="block-includes-label">What's Included</p>
+          <ul class="block-includes">
+            <li>Technical architecture and system design</li>
+            <li>User experience wireframes and flows</li>
+            <li>Brand and visual direction</li>
+            <li>Marketing and SEO strategy outline</li>
+            <li>AI and automation opportunity mapping</li>
+            <li>Project timeline, milestones, and transparent pricing</li>
+          </ul>
+        </div>
+
+        <!-- STEP 03 — Build & Launch -->
+        <div class="service-block">
+          <div class="step-number-lg">03</div>
+          <h2 class="block-title">Build &amp; Launch</h2>
+          <p class="block-desc">
+            This is where the plan becomes real. Development, marketing systems, and
+            automation are built and deployed with full visibility at every stage. You
+            see progress as it happens — not just a big reveal at the end. We iterate
+            with your feedback so the final product is exactly right.
+          </p>
+          <p class="block-includes-label">What's Included</p>
+          <ul class="block-includes">
+            <li>Custom development sprints with regular demos</li>
+            <li>Quality assurance and cross-device testing</li>
+            <li>Marketing system setup and content deployment</li>
+            <li>AI automation configuration and integration</li>
+            <li>Launch checklist and go-live coordination</li>
+            <li>Post-launch monitoring and issue resolution</li>
+          </ul>
+        </div>
+
+        <!-- STEP 04 — Grow -->
+        <div class="service-block">
+          <div class="step-number-lg">04</div>
+          <h2 class="block-title">Grow</h2>
+          <p class="block-desc">
+            Launch is just the beginning. We provide ongoing support, optimization, and
+            expansion as your business scales. Performance data drives every decision —
+            we refine what's working, fix what isn't, and help you identify the next
+            opportunity to grow. We're a long-term partner, not a one-time vendor.
+          </p>
+          <p class="block-includes-label">What's Included</p>
+          <ul class="block-includes">
+            <li>Ongoing performance monitoring and analytics</li>
+            <li>Continuous SEO and marketing optimization</li>
+            <li>Feature enhancements and platform updates</li>
+            <li>AI workflow refinement and expansion</li>
+            <li>Monthly performance reports with actionable insights</li>
+            <li>Priority support and strategic planning sessions</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer id="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="nav-logo footer-logo" aria-label="Ice Cap Labs home">
+            <img src="yeti-transparent.png" alt="Ice Cap Labs" width="30" height="30" />
+            <span>Ice Cap Labs</span>
+          </a>
+          <p class="footer-tagline">Your full-stack technology partner for modern business.</p>
+        </div>
+
+        <div class="footer-links">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="process.html">How It Works</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-contact">
+          <h4>Get In Touch</h4>
+          <a href="mailto:hello@icecaplabs.com" class="footer-email">hello@icecaplabs.com</a>
+          <div class="footer-socials">
+            <!-- X / Twitter -->
+            <a href="#" aria-label="Ice Cap Labs on X" class="social-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.259 5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+            </a>
+            <!-- LinkedIn -->
+            <a href="#" aria-label="Ice Cap Labs on LinkedIn" class="social-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                <rect x="2" y="9" width="4" height="12"/>
+                <circle cx="4" cy="4" r="2"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bar">
+        <p>&copy; <span id="footer-year"></span> Ice Cap Labs. All rights reserved.</p>
+      </div>
+    </div>
+    </footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
