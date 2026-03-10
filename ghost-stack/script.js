@@ -19,6 +19,14 @@ function initParallax() {
   const layers = document.querySelectorAll('[data-speed]');
   if (!layers.length) return;
 
+  // Trim page height to account for parallax compression
+  const maxSpeed = 0.75;
+  const hero = document.getElementById('hero');
+  if (hero) {
+    const extraSpace = (document.body.scrollHeight - hero.offsetHeight) * maxSpeed * 0.45;
+    document.body.style.marginBottom = -extraSpace + 'px';
+  }
+
   window.addEventListener('scroll', () => {
     const y = window.scrollY;
     for (let i = 0; i < layers.length; i++) {

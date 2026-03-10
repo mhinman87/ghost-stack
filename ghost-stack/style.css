@@ -231,7 +231,7 @@ section {
 /* ── Hero ─────────────────────────────────────────────────── */
 #hero {
   position: relative;
-  min-height: 160vh;
+  min-height: 150vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -260,11 +260,11 @@ section {
 }
 
 .layer-6 { background-image: url('parallax-6.png'); background-position: center center; z-index: 1; }
-.layer-5 { background-image: url('parallax-5.png'); background-position: bottom center; z-index: 2; top: 100px; }
-.layer-4 { background-image: url('parallax-4.png'); background-position: bottom center; z-index: 3; top: 200px; }
-.layer-3 { background-image: url('parallax-3.png'); background-position: bottom center; z-index: 4; top: 300px; }
-.layer-2 { background-image: url('parallax-2.png'); background-position: bottom center; z-index: 5; top: 400px; }
-.layer-1 { background-image: url('parallax-1.png'); background-position: bottom center; z-index: 6; top: 500px; }
+.layer-5 { background-image: url('parallax-5.png'); background-position: bottom center; z-index: 2; }
+.layer-4 { background-image: url('parallax-4.png'); background-position: bottom center; z-index: 3; }
+.layer-3 { background-image: url('parallax-3.png'); background-position: bottom center; z-index: 4; }
+.layer-2 { background-image: url('parallax-2.png'); background-position: bottom center; z-index: 5; }
+.layer-1 { background-image: url('parallax-1.png'); background-position: bottom center; z-index: 6; }
 
 .hero-content {
   position: relative;
