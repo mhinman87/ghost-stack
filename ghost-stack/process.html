@@ -4,108 +4,208 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>How It Works — Ice Cap Labs</title>
-  <meta name="description" content="Our clear, four-step process from discovery to growth. No black boxes, no jargon." />
+  <meta name="description" content="Our clear, four-step process from discovery to growth. Climb the mountain with us." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <style>
-    /* ── Process Page Specific ─────────────────────────────────── */
-    .page-header {
+    .climb-page { background: var(--bg-void); min-height: 100vh; overflow-x: hidden; }
+
+    /* ── Summit (top of page) ─────────────────────────────── */
+    .summit {
       text-align: center;
-      padding: clamp(7rem, 14vw, 10rem) clamp(1rem, 4vw, 2rem) clamp(3rem, 6vw, 5rem);
-      background: var(--bg-void);
+      padding: clamp(10rem, 20vw, 16rem) clamp(1rem, 4vw, 2rem) clamp(4rem, 8vw, 6rem);
+      position: relative;
     }
-
-    .page-header .section-eyebrow {
-      margin-bottom: 1rem;
+    .summit-flag {
+      font-size: clamp(3rem, 8vw, 5rem);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      transform: translateY(20px) scale(0.8);
+      transition: opacity 0.8s, transform 0.8s cubic-bezier(0.16,1,0.3,1);
     }
-
-    .page-title {
-      font-size: clamp(2rem, 5vw, 3.5rem);
+    .summit-flag.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    .summit-title {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
       color: var(--text-primary);
-      line-height: 1.15;
-      margin-bottom: 1.25rem;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s 0.2s, transform 0.8s 0.2s cubic-bezier(0.16,1,0.3,1);
     }
-
-    .page-subtitle {
-      font-size: 1.05rem;
+    .summit-title.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .summit-subtitle {
+      font-size: 1.1rem;
       color: var(--text-secondary);
-      max-width: 560px;
-      margin: 0 auto;
+      max-width: 520px;
+      margin: 0 auto 2.5rem;
       line-height: 1.75;
+      opacity: 0;
+      transition: opacity 0.8s 0.4s;
     }
-
-    .process-detail-section {
-      background: var(--bg-void);
-      padding: 0 clamp(1rem, 4vw, 2rem) clamp(4rem, 8vw, 7rem);
+    .summit-subtitle.visible { opacity: 1; }
+    .summit-cta {
+      display: inline-block;
+      padding: 0.85rem 2.5rem;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: background 0.3s, transform 0.2s;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.6s 0.6s, transform 0.6s 0.6s, background 0.3s;
     }
+    .summit-cta.visible { opacity: 1; transform: translateY(0); }
+    .summit-cta:hover { background: var(--accent-bright); transform: translateY(-2px); }
 
-    .process-blocks {
+    /* ── Trail container ──────────────────────────────────── */
+    .trail-section {
+      position: relative;
+      padding: 0 clamp(1rem, 4vw, 2rem) 0;
+      overflow: visible;
+    }
+    .trail-container {
       max-width: 900px;
       margin: 0 auto;
+      position: relative;
+    }
+
+    /* Jagged trail SVG — spans full left margin */
+    .trail-svg-wrap {
+      position: absolute;
+      left: -40px;
+      top: 0;
+      width: 400px;
+      pointer-events: none;
+      z-index: 1;
+      overflow: visible;
+    }
+    .trail-svg-wrap svg {
+      position: absolute;
+      left: 0;
+      top: 0;
+      overflow: visible;
+    }
+    .trail-path-bg {
+      stroke: rgba(14,165,233,0.08);
+      stroke-width: 2.5;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .trail-path-fill {
+      stroke: var(--accent-bright);
+      stroke-width: 2.5;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0 0 8px rgba(14,165,233,0.5));
+      transition: stroke-dashoffset 0.05s linear;
+    }
+    @media (max-width: 640px) {
+      .trail-svg-wrap { left: -20px; width: 250px; }
+    }
+
+    /* ── Trail step ───────────────────────────────────────── */
+    .trail-step {
+      position: relative;
+      padding: clamp(2.5rem, 5vw, 4rem) 0 clamp(2.5rem, 5vw, 4rem) 80px;
+      border-bottom: 1px solid var(--border-dim);
+    }
+    .trail-step:last-child { border-bottom: none; }
+
+    @media (max-width: 640px) {
+      .trail-step { padding-left: 56px; }
+    }
+
+    /* Altitude marker (the dot on the trail) */
+    .trail-marker {
+      position: absolute;
+      left: -54px;
+      top: clamp(2.5rem, 5vw, 4rem);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--bg-void);
+      border: 3px solid var(--accent);
       display: flex;
-      flex-direction: column;
-      gap: 2rem;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      transition: background 0.4s, border-color 0.4s, box-shadow 0.4s;
     }
-
-    .service-block {
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: 20px;
-      padding: clamp(2rem, 4vw, 3rem);
-      transition: border-color 0.3s, box-shadow 0.3s;
+    .trail-marker-inner {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: 0.5;
+      transition: opacity 0.4s, transform 0.4s;
     }
-
-    .service-block:hover {
-      border-color: var(--border-hover);
-      box-shadow: 0 12px 48px rgba(14,165,233,0.12);
-    }
-
-    .service-block:hover .block-title {
-      color: var(--text-primary);
-    }
-
-    .service-block:hover .block-desc {
-      color: var(--text-secondary);
-    }
-
-    .service-block:hover .step-number-lg {
-      color: var(--accent-bright);
+    .trail-step.reached .trail-marker {
       border-color: var(--accent-bright);
+      box-shadow: 0 0 20px rgba(14,165,233,0.4);
+    }
+    .trail-step.reached .trail-marker-inner {
+      opacity: 1;
+      transform: scale(1.2);
     }
 
-    .service-block:hover .block-includes li {
-      color: var(--text-secondary);
+    @media (max-width: 640px) {
+      .trail-marker { left: -44px; width: 24px; height: 24px; }
+      .trail-marker-inner { width: 8px; height: 8px; }
     }
 
-    .step-number-lg {
-      font-size: clamp(2.5rem, 5vw, 3.5rem);
+    /* Altitude label */
+    .trail-altitude {
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+      opacity: 0.6;
+      transition: opacity 0.4s;
+    }
+    .trail-step.reached .trail-altitude { opacity: 1; }
+
+    .trail-step-number {
+      font-size: clamp(2rem, 4vw, 3rem);
       font-weight: 700;
       color: var(--text-muted);
       line-height: 1;
-      margin-bottom: 1rem;
-      display: inline-block;
-      padding-bottom: 0.75rem;
-      border-bottom: 2px solid var(--text-muted);
-      transition: color 0.3s, border-color 0.3s;
+      margin-bottom: 0.75rem;
+      transition: color 0.4s;
     }
+    .trail-step.reached .trail-step-number { color: var(--accent-bright); }
 
-    .block-title {
+    .trail-step-title {
       font-size: clamp(1.35rem, 3vw, 1.75rem);
       color: var(--text-muted);
       margin-bottom: 0.85rem;
-      transition: color 0.3s;
+      transition: color 0.4s;
     }
+    .trail-step.reached .trail-step-title { color: var(--text-primary); }
 
-    .block-desc {
+    .trail-step-desc {
       font-size: 0.95rem;
       color: var(--text-muted);
       line-height: 1.8;
       max-width: 680px;
       margin-bottom: 1.5rem;
-      transition: color 0.3s;
+      transition: color 0.4s;
     }
+    .trail-step.reached .trail-step-desc { color: var(--text-secondary); }
 
     .block-includes-label {
       font-size: 0.7rem;
@@ -114,28 +214,23 @@
       color: var(--accent-bright);
       margin-bottom: 0.75rem;
     }
-
     .block-includes {
       display: grid;
       grid-template-columns: 1fr;
       gap: 0.5rem;
     }
-
     @media (min-width: 640px) {
-      .block-includes {
-        grid-template-columns: 1fr 1fr;
-      }
+      .block-includes { grid-template-columns: 1fr 1fr; }
     }
-
     .block-includes li {
       font-size: 0.875rem;
       color: var(--text-muted);
       line-height: 1.6;
       padding-left: 1.25rem;
       position: relative;
-      transition: color 0.3s;
+      transition: color 0.4s;
     }
-
+    .trail-step.reached .block-includes li { color: var(--text-secondary); }
     .block-includes li::before {
       content: '';
       position: absolute;
@@ -145,6 +240,48 @@
       height: 6px;
       border-radius: 50%;
       background: var(--accent);
+    }
+
+    /* ── Base camp banner (bottom) ────────────────────────── */
+    .base-camp {
+      text-align: center;
+      padding: clamp(4rem, 8vw, 6rem) clamp(1rem, 4vw, 2rem);
+      position: relative;
+    }
+    .base-camp-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    .base-camp-title {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      color: var(--text-primary);
+      margin-bottom: 0.75rem;
+    }
+    .base-camp-subtitle {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      max-width: 440px;
+      margin: 0 auto 2rem;
+      line-height: 1.75;
+    }
+    .scroll-up-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--accent-bright);
+      font-size: 0.85rem;
+      font-weight: 500;
+      animation: bounce-up 1.5s ease-in-out infinite;
+    }
+    .scroll-up-hint svg {
+      transform: rotate(180deg);
+    }
+    @keyframes bounce-up {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
     }
   </style>
 </head>
@@ -180,91 +317,31 @@
     </div>
   </nav>
 
-  <main>
+  <main class="climb-page">
 
-    <!-- PAGE HEADER -->
-    <div class="page-header">
-      <p class="section-eyebrow">How It Works</p>
-      <h1 class="page-title">A Clear Path Forward</h1>
-      <p class="page-subtitle">
-        No black boxes, no endless discovery calls. We follow a straightforward,
-        four-step process that moves efficiently from understanding your business
-        to building and launching things that work.
+    <!-- SUMMIT (top of page — user arrives here last) -->
+    <section class="summit" id="summit">
+      <div class="summit-flag" id="summit-flag">&#9968;</div>
+      <h1 class="summit-title" id="summit-title">You've Reached the Summit</h1>
+      <p class="summit-subtitle" id="summit-subtitle">
+        From discovery to growth — a clear path with no black boxes.
+        Ready to start the climb?
       </p>
-    </div>
+      <a href="contact.html" class="summit-cta" id="summit-cta">Start Your Journey</a>
+    </section>
 
-    <!-- PROCESS STEPS -->
-    <section class="process-detail-section">
-      <div class="process-blocks">
+    <!-- TRAIL — steps in reverse order (04 at top, 01 at bottom) -->
+    <section class="trail-section" id="trail-section">
+      <div class="trail-svg-wrap" id="trail-svg-wrap"></div>
+      <div class="trail-container">
 
-        <!-- STEP 01 — Discover -->
-        <div class="service-block">
-          <div class="step-number-lg">01</div>
-          <h2 class="block-title">Discover</h2>
-          <p class="block-desc">
-            Every engagement starts with listening. We learn your business model, your
-            customers, your goals, and the gaps standing between where you are and where
-            you want to be. No jargon, no assumptions — just an honest assessment of
-            what technology can do for you right now.
-          </p>
-          <p class="block-includes-label">What's Included</p>
-          <ul class="block-includes">
-            <li>In-depth business and goals interview</li>
-            <li>Current technology and workflow audit</li>
-            <li>Competitor and market landscape review</li>
-            <li>Identification of quick wins and high-impact opportunities</li>
-            <li>Stakeholder alignment session</li>
-            <li>Written discovery summary and recommendations</li>
-          </ul>
-        </div>
-
-        <!-- STEP 02 — Design -->
-        <div class="service-block">
-          <div class="step-number-lg">02</div>
-          <h2 class="block-title">Design</h2>
-          <p class="block-desc">
-            With a clear understanding of your business, we architect a technology
-            strategy tailored to your size, your customers, and your budget. Every
-            recommendation is practical — nothing speculative, nothing you don't need.
-            You see the full plan before a single line of code is written.
-          </p>
-          <p class="block-includes-label">What's Included</p>
-          <ul class="block-includes">
-            <li>Technical architecture and system design</li>
-            <li>User experience wireframes and flows</li>
-            <li>Brand and visual direction</li>
-            <li>Marketing and SEO strategy outline</li>
-            <li>AI and automation opportunity mapping</li>
-            <li>Project timeline, milestones, and transparent pricing</li>
-          </ul>
-        </div>
-
-        <!-- STEP 03 — Build & Launch -->
-        <div class="service-block">
-          <div class="step-number-lg">03</div>
-          <h2 class="block-title">Build &amp; Launch</h2>
-          <p class="block-desc">
-            This is where the plan becomes real. Development, marketing systems, and
-            automation are built and deployed with full visibility at every stage. You
-            see progress as it happens — not just a big reveal at the end. We iterate
-            with your feedback so the final product is exactly right.
-          </p>
-          <p class="block-includes-label">What's Included</p>
-          <ul class="block-includes">
-            <li>Custom development sprints with regular demos</li>
-            <li>Quality assurance and cross-device testing</li>
-            <li>Marketing system setup and content deployment</li>
-            <li>AI automation configuration and integration</li>
-            <li>Launch checklist and go-live coordination</li>
-            <li>Post-launch monitoring and issue resolution</li>
-          </ul>
-        </div>
-
-        <!-- STEP 04 — Grow -->
-        <div class="service-block">
-          <div class="step-number-lg">04</div>
-          <h2 class="block-title">Grow</h2>
-          <p class="block-desc">
+        <!-- STEP 04 — Grow (near summit) -->
+        <div class="trail-step" data-altitude="Summit Ridge — 14,000 ft">
+          <div class="trail-marker"><div class="trail-marker-inner"></div></div>
+          <p class="trail-altitude">Summit Ridge — 14,000 ft</p>
+          <div class="trail-step-number">04</div>
+          <h2 class="trail-step-title">Grow</h2>
+          <p class="trail-step-desc">
             Launch is just the beginning. We provide ongoing support, optimization, and
             expansion as your business scales. Performance data drives every decision —
             we refine what's working, fix what isn't, and help you identify the next
@@ -281,7 +358,91 @@
           </ul>
         </div>
 
+        <!-- STEP 03 — Build & Launch -->
+        <div class="trail-step" data-altitude="High Camp — 10,500 ft">
+          <div class="trail-marker"><div class="trail-marker-inner"></div></div>
+          <p class="trail-altitude">High Camp — 10,500 ft</p>
+          <div class="trail-step-number">03</div>
+          <h2 class="trail-step-title">Build &amp; Launch</h2>
+          <p class="trail-step-desc">
+            This is where the plan becomes real. Development, marketing systems, and
+            automation are built and deployed with full visibility at every stage. You
+            see progress as it happens — not just a big reveal at the end. We iterate
+            with your feedback so the final product is exactly right.
+          </p>
+          <p class="block-includes-label">What's Included</p>
+          <ul class="block-includes">
+            <li>Custom development sprints with regular demos</li>
+            <li>Quality assurance and cross-device testing</li>
+            <li>Marketing system setup and content deployment</li>
+            <li>AI automation configuration and integration</li>
+            <li>Launch checklist and go-live coordination</li>
+            <li>Post-launch monitoring and issue resolution</li>
+          </ul>
+        </div>
+
+        <!-- STEP 02 — Design -->
+        <div class="trail-step" data-altitude="Timberline — 7,000 ft">
+          <div class="trail-marker"><div class="trail-marker-inner"></div></div>
+          <p class="trail-altitude">Timberline — 7,000 ft</p>
+          <div class="trail-step-number">02</div>
+          <h2 class="trail-step-title">Design</h2>
+          <p class="trail-step-desc">
+            With a clear understanding of your business, we architect a technology
+            strategy tailored to your size, your customers, and your budget. Every
+            recommendation is practical — nothing speculative, nothing you don't need.
+            You see the full plan before a single line of code is written.
+          </p>
+          <p class="block-includes-label">What's Included</p>
+          <ul class="block-includes">
+            <li>Technical architecture and system design</li>
+            <li>User experience wireframes and flows</li>
+            <li>Brand and visual direction</li>
+            <li>Marketing and SEO strategy outline</li>
+            <li>AI and automation opportunity mapping</li>
+            <li>Project timeline, milestones, and transparent pricing</li>
+          </ul>
+        </div>
+
+        <!-- STEP 01 — Discover (base camp) -->
+        <div class="trail-step" data-altitude="Base Camp — 4,200 ft">
+          <div class="trail-marker"><div class="trail-marker-inner"></div></div>
+          <p class="trail-altitude">Base Camp — 4,200 ft</p>
+          <div class="trail-step-number">01</div>
+          <h2 class="trail-step-title">Discover</h2>
+          <p class="trail-step-desc">
+            Every engagement starts with listening. We learn your business model, your
+            customers, your goals, and the gaps standing between where you are and where
+            you want to be. No jargon, no assumptions — just an honest assessment of
+            what technology can do for you right now.
+          </p>
+          <p class="block-includes-label">What's Included</p>
+          <ul class="block-includes">
+            <li>In-depth business and goals interview</li>
+            <li>Current technology and workflow audit</li>
+            <li>Competitor and market landscape review</li>
+            <li>Identification of quick wins and high-impact opportunities</li>
+            <li>Stakeholder alignment session</li>
+            <li>Written discovery summary and recommendations</li>
+          </ul>
+        </div>
+
       </div>
+
+    <!-- BASE CAMP BANNER (bottom of page — user starts here) -->
+    <div class="base-camp" id="base-camp">
+      <p class="base-camp-label">Base Camp</p>
+      <h2 class="base-camp-title">Your Climb Starts Here</h2>
+      <p class="base-camp-subtitle">
+        Four steps to the summit. Scroll up to begin the ascent.
+      </p>
+      <div class="scroll-up-hint">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+        Scroll up to climb
+      </div>
+    </div>
     </section>
 
     <!-- FOOTER -->
@@ -310,13 +471,11 @@
           <h4>Get In Touch</h4>
           <a href="mailto:hello@icecaplabs.com" class="footer-email">hello@icecaplabs.com</a>
           <div class="footer-socials">
-            <!-- X / Twitter -->
             <a href="#" aria-label="Ice Cap Labs on X" class="social-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.259 5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
               </svg>
             </a>
-            <!-- LinkedIn -->
             <a href="#" aria-label="Ice Cap Labs on LinkedIn" class="social-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
@@ -336,5 +495,199 @@
   </main>
 
   <script src="script.js"></script>
+  <script>
+    // Scroll to bottom on load (base camp)
+    window.addEventListener('load', () => {
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+
+    // ── Build jagged trail SVG ──────────────────────────────
+    (function buildTrail() {
+      const wrap = document.getElementById('trail-svg-wrap');
+      const section = document.getElementById('trail-section');
+      const baseCamp = document.getElementById('base-camp');
+      if (!wrap || !section || !baseCamp) return;
+
+      const sectionRect = section.getBoundingClientRect();
+      const sectionTop = sectionRect.top + window.scrollY;
+
+      // Find marker positions (relative to trail-section top)
+      const markers = section.querySelectorAll('.trail-marker');
+      const markerPositions = [];
+      markers.forEach((m) => {
+        const r = m.getBoundingClientRect();
+        markerPositions.push({
+          x: r.left + r.width / 2 - sectionRect.left + 40, // +40 for SVG wrap offset
+          y: r.top + r.height / 2 - sectionRect.top
+        });
+      });
+
+      // Start point: base-camp title
+      const baseCampTitle = baseCamp.querySelector('.base-camp-title');
+      const startY = baseCampTitle
+        ? (baseCampTitle.getBoundingClientRect().top + baseCampTitle.offsetHeight / 2) - sectionRect.top
+        : section.scrollHeight;
+      const startX = baseCampTitle
+        ? (baseCampTitle.getBoundingClientRect().left - sectionRect.left + 40)
+        : 150;
+
+      // SVG dimensions
+      const svgW = 400;
+      const totalH = startY + 40;
+      wrap.style.height = totalH + 'px';
+
+      // ── Build waypoints: start → markers (bottom to top) → end ──
+      // Markers are in DOM order (04 at top, 01 at bottom), reverse for bottom-to-top
+      const waypoints = [{ x: startX, y: startY }];
+      for (let i = markerPositions.length - 1; i >= 0; i--) {
+        waypoints.push(markerPositions[i]);
+      }
+
+      // ── Generate jagged path between waypoints ──────────────
+      // Between each pair of waypoints, create hard switchback zigzags
+      const allPoints = [];
+      const xMin = 30;    // left bound
+      const xMax = 320;   // right bound
+      const microAmp = 7; // small jitter amplitude
+      const microStep = 20; // px between micro jags
+
+      for (let w = 0; w < waypoints.length; w++) {
+        const from = w === 0 ? waypoints[0] : waypoints[w - 1];
+        const to = waypoints[w];
+
+        if (w === 0) {
+          allPoints.push({ x: to.x, y: to.y });
+          continue;
+        }
+
+        const dy = from.y - to.y; // positive (going up)
+        if (dy <= 0) {
+          allPoints.push({ x: to.x, y: to.y });
+          continue;
+        }
+
+        // Number of hard switchbacks between waypoints
+        const numSwitchbacks = Math.max(2, Math.floor(dy / 120));
+        const segH = dy / (numSwitchbacks + 1);
+
+        // Alternate switchback direction - swing wide left and right
+        let goRight = (from.x < 180); // start by going away from current side
+
+        for (let s = 0; s < numSwitchbacks; s++) {
+          const segY = from.y - segH * (s + 1);
+
+          // Hard switchback: swing to opposite side
+          const targetX = goRight
+            ? xMax - Math.random() * 60
+            : xMin + Math.random() * 60;
+
+          // Build micro-jagged path from current position to switchback point
+          const prevPt = allPoints[allPoints.length - 1];
+          const microDy = prevPt.y - segY;
+          const microSteps = Math.max(2, Math.floor(microDy / microStep));
+          const microSegH = microDy / microSteps;
+          const microDx = (targetX - prevPt.x) / microSteps;
+
+          for (let m = 1; m <= microSteps; m++) {
+            const my = prevPt.y - microSegH * m;
+            const baseX = prevPt.x + microDx * m;
+            // Add micro jitter (alternating left/right)
+            const jitter = (m % 2 === 0 ? -1 : 1) * (microAmp + Math.random() * 4);
+            const mx = Math.max(xMin, Math.min(xMax, baseX + jitter));
+            allPoints.push({ x: mx, y: my });
+          }
+
+          goRight = !goRight;
+        }
+
+        // Final segment: jagged path into the marker
+        const lastPt = allPoints[allPoints.length - 1];
+        const finalDy = lastPt.y - to.y;
+        const finalSteps = Math.max(2, Math.floor(finalDy / microStep));
+        const finalSegH = finalDy / finalSteps;
+        const finalDx = (to.x - lastPt.x) / finalSteps;
+
+        for (let m = 1; m <= finalSteps; m++) {
+          const my = lastPt.y - finalSegH * m;
+          const baseX = lastPt.x + finalDx * m;
+          const jitter = (m % 2 === 0 ? -1 : 1) * (microAmp + Math.random() * 3);
+          // On the very last point, land exactly on the marker (no jitter)
+          const mx = (m === finalSteps)
+            ? to.x
+            : Math.max(xMin, Math.min(xMax, baseX + jitter));
+          allPoints.push({ x: mx, y: (m === finalSteps) ? to.y : my });
+        }
+      }
+
+      // Build SVG path
+      if (allPoints.length < 2) return;
+      let d = `M${allPoints[0].x.toFixed(1)},${allPoints[0].y.toFixed(1)}`;
+      for (let i = 1; i < allPoints.length; i++) {
+        d += ` L${allPoints[i].x.toFixed(1)},${allPoints[i].y.toFixed(1)}`;
+      }
+
+      const svgNS = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(svgNS, 'svg');
+      svg.setAttribute('width', svgW);
+      svg.setAttribute('height', totalH);
+      svg.setAttribute('viewBox', `0 0 ${svgW} ${totalH}`);
+      svg.style.width = svgW + 'px';
+      svg.style.height = totalH + 'px';
+
+      // Background path (dim)
+      const bgPath = document.createElementNS(svgNS, 'path');
+      bgPath.setAttribute('d', d);
+      bgPath.setAttribute('class', 'trail-path-bg');
+      svg.appendChild(bgPath);
+
+      // Fill path (bright, animated)
+      const fillPath = document.createElementNS(svgNS, 'path');
+      fillPath.setAttribute('d', d);
+      fillPath.setAttribute('class', 'trail-path-fill');
+      svg.appendChild(fillPath);
+
+      wrap.appendChild(svg);
+
+      // Stroke-dash animation: path draws from bottom up
+      const totalLen = fillPath.getTotalLength();
+      fillPath.style.strokeDasharray = totalLen;
+      fillPath.style.strokeDashoffset = 0;
+
+      function updateTrail() {
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        const scrolled = window.scrollY;
+        // progress: 0 at bottom (page load), 1 at top (summit)
+        const progress = 1 - (scrolled / maxScroll);
+        fillPath.style.strokeDashoffset = totalLen * (1 - progress);
+      }
+
+      window.addEventListener('scroll', updateTrail, { passive: true });
+      requestAnimationFrame(updateTrail);
+    })();
+
+    // ── Light up trail steps as they enter viewport ─────────
+    const trailSteps = document.querySelectorAll('.trail-step');
+    const trailObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('reached');
+        }
+      });
+    }, { threshold: 0.3, rootMargin: '0px 0px -80px 0px' });
+    trailSteps.forEach((step) => trailObserver.observe(step));
+
+    // ── Summit reveal when scrolled to top ──────────────────
+    const summitEls = ['summit-flag', 'summit-title', 'summit-subtitle', 'summit-cta'];
+    const summitObserver = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        summitEls.forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) el.classList.add('visible');
+        });
+      }
+    }, { threshold: 0.3 });
+    const summitSection = document.getElementById('summit');
+    if (summitSection) summitObserver.observe(summitSection);
+  </script>
 </body>
 </html>

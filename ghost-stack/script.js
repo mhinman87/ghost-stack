@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initNav();
   initContactForm();
   initFooterYear();
+  initSnowflakeCursor();
 });
 
 
@@ -22,12 +23,19 @@ function initParallax() {
   // Trim main height to account for parallax compression.
   const main = document.querySelector('main');
   const hero = document.getElementById('hero');
-  if (main && hero) {
+
+  function trimMain() {
+    if (!main || !hero) return;
+    // Temporarily remove fixed height so we can measure true scrollHeight
+    main.style.height = '';
     const contentBelow = main.scrollHeight - hero.offsetHeight;
     const trimmed = hero.offsetHeight + contentBelow * 0.55;
     main.style.height = trimmed + 'px';
     main.style.overflow = 'hidden';
   }
+
+  trimMain();
+  window.addEventListener('hashchange', trimMain);
 
   window.addEventListener('scroll', () => {
     const y = window.scrollY;
@@ -153,6 +161,93 @@ function initContactForm() {
       `Hi Ice Cap Labs team,\n\nI found you through your website and wanted to connect.\n\nMy email: ${email}\n\n`
     );
     window.location.href = `mailto:hello@icecaplabs.com?subject=${subject}&body=${body}`;
+  });
+}
+
+/* ── Snowflake cursor ────────────────────────────────────── */
+function initSnowflakeCursor() {
+  // Skip on touch-only devices
+  if (!window.matchMedia('(hover: hover)').matches) return;
+
+  const flakeSVG = (size) => {
+    const s = size;
+    const h = s / 2;
+    // 6-pointed snowflake: 3 crossing lines + small branches
+    const arm = h * 0.85;
+    const br = arm * 0.45;  // branch length
+    const ba = arm * 0.6;   // branch start distance from center
+    let d = '';
+    for (let i = 0; i < 6; i++) {
+      const a = (i * 60) * Math.PI / 180;
+      const cos = Math.cos(a);
+      const sin = Math.sin(a);
+      // Main arm
+      d += `M${h},${h} L${h + cos * arm},${h + sin * arm} `;
+      // Branch
+      const bx = h + cos * ba;
+      const by = h + sin * ba;
+      const la = a + 0.55;
+      const ra = a - 0.55;
+      d += `M${bx},${by} L${bx + Math.cos(la) * br},${by + Math.sin(la) * br} `;
+      d += `M${bx},${by} L${bx + Math.cos(ra) * br},${by + Math.sin(ra) * br} `;
+    }
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${s}" height="${s}" viewBox="0 0 ${s} ${s}"><path d="${d}" stroke="currentColor" stroke-width="${s * 0.07}" stroke-linecap="round" fill="none"/></svg>`;
+  };
+
+  const cursor = document.createElement('div');
+  cursor.className = 'snowflake-cursor';
+  cursor.innerHTML = flakeSVG(36);
+
+  const trail = document.createElement('div');
+  trail.className = 'snowflake-trail';
+  trail.innerHTML = flakeSVG(60);
+
+  document.body.appendChild(trail);
+  document.body.appendChild(cursor);
+
+  // Hide default cursor everywhere
+  const cursorStyle = document.createElement('style');
+  cursorStyle.textContent = '*, *::before, *::after { cursor: none !important; }';
+  document.head.appendChild(cursorStyle);
+
+  let mx = -100, my = -100;
+  let tx = -100, ty = -100;
+  let hovering = false;
+
+  document.addEventListener('mousemove', (e) => {
+    mx = e.clientX;
+    my = e.clientY;
+    cursor.style.left = (mx - 18) + 'px';
+    cursor.style.top  = (my - 18) + 'px';
+
+    // Detect if over a clickable/hoverable element
+    const target = e.target.closest('a, button, input, textarea, select, [role="button"], .service-card, .service-block, .why-item, .process-step, .nav-cta, .nav-mobile-cta, .btn-primary, .social-icon');
+    const isHovering = !!target;
+    if (isHovering !== hovering) {
+      hovering = isHovering;
+      cursor.classList.toggle('hovering', hovering);
+      trail.classList.toggle('hovering', hovering);
+    }
+  });
+
+  // Trail follows with easing
+  function animate() {
+    tx += (mx - tx) * 0.12;
+    ty += (my - ty) * 0.12;
+    trail.style.left = (tx - 30) + 'px';
+    trail.style.top  = (ty - 30) + 'px';
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  // Hide when cursor leaves the window
+  document.addEventListener('mouseleave', () => {
+    cursor.style.opacity = '0';
+    trail.style.opacity  = '0';
+  });
+  document.addEventListener('mouseenter', () => {
+    cursor.style.opacity = '0.9';
+    trail.style.opacity  = '0.35';
   });
 }
 
