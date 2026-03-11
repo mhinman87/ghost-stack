@@ -20,7 +20,8 @@
     }
     .summit-marker {
       position: absolute !important;
-      left: 50% !important;
+      /* Align with step markers: trail-container is 900px centered, markers at 80px - 54px = 26px from container left */
+      left: calc(50% - min(450px, 50vw - 1rem)) !important;
       top: clamp(6rem, 12vw, 9rem) !important;
       transform: translateX(-50%);
     }
@@ -120,7 +121,7 @@
       transition: stroke-dashoffset 0.05s linear;
     }
     @media (max-width: 640px) {
-      .trail-svg-wrap { left: -20px; width: 250px; }
+      .trail-svg-wrap { display: none; }
     }
 
     /* ── Trail step ───────────────────────────────────────── */
@@ -509,204 +510,207 @@
     });
 
     // ── Build jagged trail SVG ──────────────────────────────
-    (function buildTrail() {
+    (function() {
       const wrap = document.getElementById('trail-svg-wrap');
       const section = document.getElementById('trail-section');
       const baseCamp = document.getElementById('base-camp');
       if (!wrap || !section || !baseCamp) return;
 
-      const sectionRect = section.getBoundingClientRect();
-      const sectionTop = sectionRect.top + window.scrollY;
+      let fillPath = null;
+      let totalLen = 0;
 
-      // Find marker positions (relative to trail-section top)
-      const markers = section.querySelectorAll('.trail-marker');
-      const markerPositions = [];
-      markers.forEach((m) => {
-        const r = m.getBoundingClientRect();
-        markerPositions.push({
-          x: r.left + r.width / 2 - sectionRect.left + 40, // +40 for SVG wrap offset
-          y: r.top + r.height / 2 - sectionRect.top
+      function rebuild() {
+        // Reset seed for consistent path on every rebuild
+        let seed = 42;
+        function rand() { seed = (seed * 16807 + 0) % 2147483647; return seed / 2147483647; }
+
+        // Clear previous SVG
+        wrap.innerHTML = '';
+
+        const sectionRect = section.getBoundingClientRect();
+
+        // Find marker positions (relative to trail-section top)
+        const markers = section.querySelectorAll('.trail-marker');
+        const markerPositions = [];
+        markers.forEach((m) => {
+          const r = m.getBoundingClientRect();
+          markerPositions.push({
+            x: r.left + r.width / 2 - sectionRect.left + 40,
+            y: r.top + r.height / 2 - sectionRect.top
+          });
         });
-      });
 
-      // Start point: base-camp title
-      const baseCampTitle = baseCamp.querySelector('.base-camp-title');
-      const startY = baseCampTitle
-        ? (baseCampTitle.getBoundingClientRect().top + baseCampTitle.offsetHeight / 2) - sectionRect.top
-        : section.scrollHeight;
-      const startX = baseCampTitle
-        ? (baseCampTitle.getBoundingClientRect().left - sectionRect.left + 40)
-        : 150;
+        // Start point: base-camp title
+        const baseCampTitle = baseCamp.querySelector('.base-camp-title');
+        const startY = baseCampTitle
+          ? (baseCampTitle.getBoundingClientRect().top + baseCampTitle.offsetHeight / 2) - sectionRect.top
+          : section.scrollHeight;
+        const startX = baseCampTitle
+          ? (baseCampTitle.getBoundingClientRect().left - sectionRect.left + 40)
+          : 150;
 
-      // SVG dimensions
-      const svgW = 400;
-      const totalH = startY + 40;
-      wrap.style.height = totalH + 'px';
+        // SVG dimensions — scale to actual section width
+        const svgW = Math.min(400, sectionRect.width);
+        const totalH = startY + 40;
+        wrap.style.height = totalH + 'px';
 
-      // ── Build waypoints: start → markers (bottom to top) → end ──
-      // Markers are in DOM order (04 at top, 01 at bottom), reverse for bottom-to-top
-      const waypoints = [{ x: startX, y: startY }];
-      for (let i = markerPositions.length - 1; i >= 0; i--) {
-        waypoints.push(markerPositions[i]);
-      }
+        // Scale x bounds to SVG width
+        const xMin = svgW * 0.075;
+        const xMax = svgW * 0.8;
+        const microAmp = 7;
+        const microStep = 20;
 
-      // ── Generate jagged path between waypoints ──────────────
-      // Seeded random for consistent path across reloads
-      let seed = 42;
-      function rand() { seed = (seed * 16807 + 0) % 2147483647; return seed / 2147483647; }
-
-      const allPoints = [];
-      const xMin = 30;    // left bound
-      const xMax = 320;   // right bound
-      const microAmp = 7; // small jitter amplitude
-      const microStep = 20; // px between micro jags
-
-      for (let w = 0; w < waypoints.length; w++) {
-        const from = w === 0 ? waypoints[0] : waypoints[w - 1];
-        const to = waypoints[w];
-
-        if (w === 0) {
-          allPoints.push({ x: to.x, y: to.y });
-          continue;
+        // Waypoints: start → markers (bottom to top)
+        const waypoints = [{ x: Math.min(startX, xMax), y: startY }];
+        for (let i = markerPositions.length - 1; i >= 0; i--) {
+          waypoints.push({
+            x: Math.max(xMin, Math.min(xMax, markerPositions[i].x)),
+            y: markerPositions[i].y
+          });
         }
 
-        const dy = from.y - to.y; // positive (going up)
-        if (dy <= 0) {
-          allPoints.push({ x: to.x, y: to.y });
-          continue;
-        }
+        // Generate jagged path between waypoints
+        const allPoints = [];
 
-        // Vary switchback count per segment (not uniform)
-        const baseSwitchbacks = Math.max(2, Math.floor(dy / 120));
-        const numSwitchbacks = baseSwitchbacks + Math.floor(rand() * 3) - 1;
+        for (let w = 0; w < waypoints.length; w++) {
+          const from = w === 0 ? waypoints[0] : waypoints[w - 1];
+          const to = waypoints[w];
 
-        // Create uneven segment heights — some short, some long
-        const rawHeights = [];
-        for (let s = 0; s < numSwitchbacks; s++) {
-          rawHeights.push(0.5 + rand() * 1.5); // weight between 0.5 and 2.0
-        }
-        rawHeights.push(0.8 + rand() * 0.4); // final segment to marker
-        const totalWeight = rawHeights.reduce((a, b) => a + b, 0);
-        const segHeights = rawHeights.map(h => (h / totalWeight) * dy);
-
-        // Alternate switchback direction
-        let goRight = (from.x < 180);
-
-        let currentY = from.y;
-        for (let s = 0; s < numSwitchbacks; s++) {
-          const segY = currentY - segHeights[s];
-
-          // Vary the swing width — sometimes wide, sometimes medium, occasionally narrow
-          const swingRoll = rand();
-          let targetX;
-          if (swingRoll < 0.2) {
-            // Narrow swing — stay more central
-            targetX = goRight
-              ? 140 + rand() * 80
-              : 80 + rand() * 80;
-          } else if (swingRoll < 0.5) {
-            // Medium swing
-            targetX = goRight
-              ? 200 + rand() * 80
-              : xMin + rand() * 80;
-          } else {
-            // Wide swing — full width
-            targetX = goRight
-              ? xMax - rand() * 50
-              : xMin + rand() * 50;
+          if (w === 0) {
+            allPoints.push({ x: to.x, y: to.y });
+            continue;
           }
 
-          // Build micro-jagged path from current position to switchback point
-          const prevPt = allPoints[allPoints.length - 1];
-          const microDy = prevPt.y - segY;
-          const microSteps = Math.max(2, Math.floor(microDy / microStep));
-          const microSegH = microDy / microSteps;
-          const microDx = (targetX - prevPt.x) / microSteps;
-
-          for (let m = 1; m <= microSteps; m++) {
-            const my = prevPt.y - microSegH * m;
-            const baseX = prevPt.x + microDx * m;
-            // Vary micro jitter intensity
-            const jitterScale = 0.6 + rand() * 0.8;
-            const jitter = (m % 2 === 0 ? -1 : 1) * (microAmp * jitterScale + rand() * 5);
-            const mx = Math.max(xMin, Math.min(xMax, baseX + jitter));
-            allPoints.push({ x: mx, y: my });
+          const dy = from.y - to.y;
+          if (dy <= 0) {
+            allPoints.push({ x: to.x, y: to.y });
+            continue;
           }
 
-          currentY = segY;
-          // Usually alternate, but occasionally do two in the same direction
-          if (rand() < 0.15) {
-            // Don't flip — two swings same direction for variety
-          } else {
-            goRight = !goRight;
+          const baseSwitchbacks = Math.max(2, Math.floor(dy / 120));
+          const numSwitchbacks = baseSwitchbacks + Math.floor(rand() * 3) - 1;
+
+          const rawHeights = [];
+          for (let s = 0; s < numSwitchbacks; s++) {
+            rawHeights.push(0.5 + rand() * 1.5);
+          }
+          rawHeights.push(0.8 + rand() * 0.4);
+          const totalWeight = rawHeights.reduce((a, b) => a + b, 0);
+          const segHeights = rawHeights.map(h => (h / totalWeight) * dy);
+
+          let goRight = (from.x < (xMin + xMax) / 2);
+          let currentY = from.y;
+
+          for (let s = 0; s < numSwitchbacks; s++) {
+            const segY = currentY - segHeights[s];
+            const xMid = (xMin + xMax) / 2;
+            const xRange = xMax - xMin;
+
+            const swingRoll = rand();
+            let targetX;
+            if (swingRoll < 0.2) {
+              targetX = goRight
+                ? xMid + rand() * xRange * 0.15
+                : xMid - rand() * xRange * 0.15;
+            } else if (swingRoll < 0.5) {
+              targetX = goRight
+                ? xMid + xRange * 0.2 + rand() * xRange * 0.15
+                : xMin + rand() * xRange * 0.2;
+            } else {
+              targetX = goRight
+                ? xMax - rand() * xRange * 0.12
+                : xMin + rand() * xRange * 0.12;
+            }
+
+            const prevPt = allPoints[allPoints.length - 1];
+            const microDy = prevPt.y - segY;
+            const microSteps = Math.max(2, Math.floor(microDy / microStep));
+            const microSegH = microDy / microSteps;
+            const microDx = (targetX - prevPt.x) / microSteps;
+
+            for (let m = 1; m <= microSteps; m++) {
+              const my = prevPt.y - microSegH * m;
+              const baseX = prevPt.x + microDx * m;
+              const jitterScale = 0.6 + rand() * 0.8;
+              const jitter = (m % 2 === 0 ? -1 : 1) * (microAmp * jitterScale + rand() * 5);
+              const mx = Math.max(xMin, Math.min(xMax, baseX + jitter));
+              allPoints.push({ x: mx, y: my });
+            }
+
+            currentY = segY;
+            if (rand() < 0.15) { /* same direction */ } else { goRight = !goRight; }
+          }
+
+          // Final segment into the marker
+          const lastPt = allPoints[allPoints.length - 1];
+          const finalDy = lastPt.y - to.y;
+          const finalSteps = Math.max(2, Math.floor(finalDy / microStep));
+          const finalSegH = finalDy / finalSteps;
+          const finalDx = (to.x - lastPt.x) / finalSteps;
+
+          for (let m = 1; m <= finalSteps; m++) {
+            const my = lastPt.y - finalSegH * m;
+            const baseX = lastPt.x + finalDx * m;
+            const jitter = (m % 2 === 0 ? -1 : 1) * (microAmp + rand() * 3);
+            const mx = (m === finalSteps)
+              ? to.x
+              : Math.max(xMin, Math.min(xMax, baseX + jitter));
+            allPoints.push({ x: mx, y: (m === finalSteps) ? to.y : my });
           }
         }
 
-        // Final segment: jagged path into the marker
-        const lastPt = allPoints[allPoints.length - 1];
-        const finalDy = lastPt.y - to.y;
-        const finalSteps = Math.max(2, Math.floor(finalDy / microStep));
-        const finalSegH = finalDy / finalSteps;
-        const finalDx = (to.x - lastPt.x) / finalSteps;
-
-        for (let m = 1; m <= finalSteps; m++) {
-          const my = lastPt.y - finalSegH * m;
-          const baseX = lastPt.x + finalDx * m;
-          const jitter = (m % 2 === 0 ? -1 : 1) * (microAmp + Math.random() * 3);
-          // On the very last point, land exactly on the marker (no jitter)
-          const mx = (m === finalSteps)
-            ? to.x
-            : Math.max(xMin, Math.min(xMax, baseX + jitter));
-          allPoints.push({ x: mx, y: (m === finalSteps) ? to.y : my });
+        // Build SVG
+        if (allPoints.length < 2) return;
+        let d = `M${allPoints[0].x.toFixed(1)},${allPoints[0].y.toFixed(1)}`;
+        for (let i = 1; i < allPoints.length; i++) {
+          d += ` L${allPoints[i].x.toFixed(1)},${allPoints[i].y.toFixed(1)}`;
         }
+
+        const svgNS = 'http://www.w3.org/2000/svg';
+        const svg = document.createElementNS(svgNS, 'svg');
+        svg.setAttribute('width', svgW);
+        svg.setAttribute('height', totalH);
+        svg.setAttribute('viewBox', `0 0 ${svgW} ${totalH}`);
+        svg.style.width = svgW + 'px';
+        svg.style.height = totalH + 'px';
+
+        const bgPath = document.createElementNS(svgNS, 'path');
+        bgPath.setAttribute('d', d);
+        bgPath.setAttribute('class', 'trail-path-bg');
+        svg.appendChild(bgPath);
+
+        fillPath = document.createElementNS(svgNS, 'path');
+        fillPath.setAttribute('d', d);
+        fillPath.setAttribute('class', 'trail-path-fill');
+        svg.appendChild(fillPath);
+
+        wrap.appendChild(svg);
+
+        totalLen = fillPath.getTotalLength();
+        fillPath.style.strokeDasharray = totalLen;
+        fillPath.style.strokeDashoffset = totalLen; // start empty
+        updateTrail();
       }
-
-      // Build SVG path
-      if (allPoints.length < 2) return;
-      let d = `M${allPoints[0].x.toFixed(1)},${allPoints[0].y.toFixed(1)}`;
-      for (let i = 1; i < allPoints.length; i++) {
-        d += ` L${allPoints[i].x.toFixed(1)},${allPoints[i].y.toFixed(1)}`;
-      }
-
-      const svgNS = 'http://www.w3.org/2000/svg';
-      const svg = document.createElementNS(svgNS, 'svg');
-      svg.setAttribute('width', svgW);
-      svg.setAttribute('height', totalH);
-      svg.setAttribute('viewBox', `0 0 ${svgW} ${totalH}`);
-      svg.style.width = svgW + 'px';
-      svg.style.height = totalH + 'px';
-
-      // Background path (dim)
-      const bgPath = document.createElementNS(svgNS, 'path');
-      bgPath.setAttribute('d', d);
-      bgPath.setAttribute('class', 'trail-path-bg');
-      svg.appendChild(bgPath);
-
-      // Fill path (bright, animated)
-      const fillPath = document.createElementNS(svgNS, 'path');
-      fillPath.setAttribute('d', d);
-      fillPath.setAttribute('class', 'trail-path-fill');
-      svg.appendChild(fillPath);
-
-      wrap.appendChild(svg);
-
-      // Stroke-dash animation: path draws from bottom up
-      const totalLen = fillPath.getTotalLength();
-      fillPath.style.strokeDasharray = totalLen;
-      fillPath.style.strokeDashoffset = 0;
 
       function updateTrail() {
+        if (!fillPath) return;
         const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
         const scrolled = window.scrollY;
-        // progress: 0 at bottom (page load), 1 at top (summit)
-        const rawProgress = 1 - (scrolled / maxScroll);
-        // 1:1 mapping — extra top padding gives the trail room to complete
-        const progress = Math.max(0, Math.min(1, rawProgress));
+        // progress: 0 at bottom (page load), 1 at top — 5% delay before filling starts
+        const raw = 1 - (scrolled / maxScroll);
+        const progress = Math.max(0, Math.min(1, (raw - 0.05) / 0.95));
         fillPath.style.strokeDashoffset = totalLen * (1 - progress);
       }
 
+      // Build on load, rebuild on resize (debounced)
+      rebuild();
+      let resizeTimer;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(rebuild, 250);
+      });
+
       window.addEventListener('scroll', updateTrail, { passive: true });
-      requestAnimationFrame(updateTrail);
     })();
 
     // ── Light up trail steps as they enter viewport ─────────
