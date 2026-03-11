@@ -10,13 +10,19 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <style>
-    .climb-page { background: var(--bg-void); min-height: 100vh; overflow-x: hidden; }
+    .climb-page { background: var(--bg-void); min-height: 100vh; overflow-x: hidden; padding-top: 18vh; }
 
     /* ── Summit (top of page) ─────────────────────────────── */
     .summit {
       text-align: center;
       padding: clamp(10rem, 20vw, 16rem) clamp(1rem, 4vw, 2rem) clamp(4rem, 8vw, 6rem);
       position: relative;
+    }
+    .summit-marker {
+      position: absolute !important;
+      left: 50% !important;
+      top: clamp(6rem, 12vw, 9rem) !important;
+      transform: translateX(-50%);
     }
     .summit-flag {
       font-size: clamp(3rem, 8vw, 5rem);
@@ -319,20 +325,21 @@
 
   <main class="climb-page">
 
-    <!-- SUMMIT (top of page — user arrives here last) -->
-    <section class="summit" id="summit">
-      <div class="summit-flag" id="summit-flag">&#9968;</div>
-      <h1 class="summit-title" id="summit-title">You've Reached the Summit</h1>
-      <p class="summit-subtitle" id="summit-subtitle">
-        From discovery to growth — a clear path with no black boxes.
-        Ready to start the climb?
-      </p>
-      <a href="contact.html" class="summit-cta" id="summit-cta">Start Your Journey</a>
-    </section>
-
-    <!-- TRAIL — steps in reverse order (04 at top, 01 at bottom) -->
+    <!-- TRAIL — full climb from base camp to summit -->
     <section class="trail-section" id="trail-section">
       <div class="trail-svg-wrap" id="trail-svg-wrap"></div>
+
+      <!-- SUMMIT (top of page — user arrives here last) -->
+      <div class="summit" id="summit">
+        <div class="trail-marker summit-marker"><div class="trail-marker-inner"></div></div>
+        <div class="summit-flag" id="summit-flag">&#9968;</div>
+        <h1 class="summit-title" id="summit-title">You've Reached the Summit</h1>
+        <p class="summit-subtitle" id="summit-subtitle">
+          From discovery to growth — a clear path with no black boxes.
+          Ready to start the climb?
+        </p>
+        <a href="contact.html" class="summit-cta" id="summit-cta">Start Your Journey</a>
+      </div>
       <div class="trail-container">
 
         <!-- STEP 04 — Grow (near summit) -->
@@ -544,7 +551,10 @@
       }
 
       // ── Generate jagged path between waypoints ──────────────
-      // Between each pair of waypoints, create hard switchback zigzags
+      // Seeded random for consistent path across reloads
+      let seed = 42;
+      function rand() { seed = (seed * 16807 + 0) % 2147483647; return seed / 2147483647; }
+
       const allPoints = [];
       const xMin = 30;    // left bound
       const xMax = 320;   // right bound
@@ -566,20 +576,45 @@
           continue;
         }
 
-        // Number of hard switchbacks between waypoints
-        const numSwitchbacks = Math.max(2, Math.floor(dy / 120));
-        const segH = dy / (numSwitchbacks + 1);
+        // Vary switchback count per segment (not uniform)
+        const baseSwitchbacks = Math.max(2, Math.floor(dy / 120));
+        const numSwitchbacks = baseSwitchbacks + Math.floor(rand() * 3) - 1;
 
-        // Alternate switchback direction - swing wide left and right
-        let goRight = (from.x < 180); // start by going away from current side
-
+        // Create uneven segment heights — some short, some long
+        const rawHeights = [];
         for (let s = 0; s < numSwitchbacks; s++) {
-          const segY = from.y - segH * (s + 1);
+          rawHeights.push(0.5 + rand() * 1.5); // weight between 0.5 and 2.0
+        }
+        rawHeights.push(0.8 + rand() * 0.4); // final segment to marker
+        const totalWeight = rawHeights.reduce((a, b) => a + b, 0);
+        const segHeights = rawHeights.map(h => (h / totalWeight) * dy);
 
-          // Hard switchback: swing to opposite side
-          const targetX = goRight
-            ? xMax - Math.random() * 60
-            : xMin + Math.random() * 60;
+        // Alternate switchback direction
+        let goRight = (from.x < 180);
+
+        let currentY = from.y;
+        for (let s = 0; s < numSwitchbacks; s++) {
+          const segY = currentY - segHeights[s];
+
+          // Vary the swing width — sometimes wide, sometimes medium, occasionally narrow
+          const swingRoll = rand();
+          let targetX;
+          if (swingRoll < 0.2) {
+            // Narrow swing — stay more central
+            targetX = goRight
+              ? 140 + rand() * 80
+              : 80 + rand() * 80;
+          } else if (swingRoll < 0.5) {
+            // Medium swing
+            targetX = goRight
+              ? 200 + rand() * 80
+              : xMin + rand() * 80;
+          } else {
+            // Wide swing — full width
+            targetX = goRight
+              ? xMax - rand() * 50
+              : xMin + rand() * 50;
+          }
 
           // Build micro-jagged path from current position to switchback point
           const prevPt = allPoints[allPoints.length - 1];
@@ -591,13 +626,20 @@
           for (let m = 1; m <= microSteps; m++) {
             const my = prevPt.y - microSegH * m;
             const baseX = prevPt.x + microDx * m;
-            // Add micro jitter (alternating left/right)
-            const jitter = (m % 2 === 0 ? -1 : 1) * (microAmp + Math.random() * 4);
+            // Vary micro jitter intensity
+            const jitterScale = 0.6 + rand() * 0.8;
+            const jitter = (m % 2 === 0 ? -1 : 1) * (microAmp * jitterScale + rand() * 5);
             const mx = Math.max(xMin, Math.min(xMax, baseX + jitter));
             allPoints.push({ x: mx, y: my });
           }
 
-          goRight = !goRight;
+          currentY = segY;
+          // Usually alternate, but occasionally do two in the same direction
+          if (rand() < 0.15) {
+            // Don't flip — two swings same direction for variety
+          } else {
+            goRight = !goRight;
+          }
         }
 
         // Final segment: jagged path into the marker
@@ -657,7 +699,9 @@
         const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
         const scrolled = window.scrollY;
         // progress: 0 at bottom (page load), 1 at top (summit)
-        const progress = 1 - (scrolled / maxScroll);
+        const rawProgress = 1 - (scrolled / maxScroll);
+        // 1:1 mapping — extra top padding gives the trail room to complete
+        const progress = Math.max(0, Math.min(1, rawProgress));
         fillPath.style.strokeDashoffset = totalLen * (1 - progress);
       }
 
