@@ -118,7 +118,7 @@
       stroke-dasharray: 12 8;
       filter: drop-shadow(0 0 8px rgba(14,165,233,0.5));
     }
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
       .trail-svg-wrap { display: none; }
     }
 
@@ -559,21 +559,34 @@
         const centerInSvg = viewportCenter - wrapLeft;
         const svgW = Math.max(400, centerInSvg + 60);
         const totalH = startY + 40;
+
+        // Calculate available left margin so trail stays out of text
+        const containerEl = document.querySelector('.trail-container');
+        const containerLeft = containerEl ? containerEl.getBoundingClientRect().left : 0;
+        const availableWidth = containerLeft - wrapLeft;
+
+        // If margin is too narrow, hide trail entirely
+        if (availableWidth < 80) {
+          wrap.style.display = 'none';
+          return;
+        }
+        wrap.style.display = '';
+
         wrap.style.height = totalH + 'px';
         wrap.style.width = svgW + 'px';
 
         const xMin = 30;
-        const xMax = 320;
+        const xMax = Math.min(320, availableWidth - 20);
         const microAmp = 7;
         const microStep = 20;
 
         // Build waypoints: bottom (start) → steps (reversed, bottom to top) → summit
-        const startX = 150 + rand() * 50;
+        const startX = Math.min(150 + rand() * 50, xMax - 20);
         const waypoints = [{ x: startX, y: startY }];
         // Steps are in DOM order (04 at top, 01 at bottom) — reverse for bottom-to-top
         for (let i = stepYPositions.length - 1; i >= 0; i--) {
-          // Place waypoint x in the trail zone (left side)
-          waypoints.push({ x: 100 + rand() * 150, y: stepYPositions[i] });
+          // Place waypoint x in the trail zone (left margin)
+          waypoints.push({ x: Math.min(100 + rand() * 150, xMax - 10), y: stepYPositions[i] });
         }
         // Summit waypoint: center of viewport
         waypoints.push({ x: centerInSvg - window.innerWidth * 0.10, y: summitY });
