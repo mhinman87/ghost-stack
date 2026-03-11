@@ -9,6 +9,200 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── Avalanche Hero ─────────────────────────────────────── */
+    .avalanche-hero {
+      padding: calc(64px + 4rem) clamp(1rem, 4vw, 2rem) clamp(4rem, 8vw, 6rem);
+      min-height: 80vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: var(--bg-void);
+      position: relative;
+      overflow: hidden;
+    }
+    .avalanche-hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 80'%3E%3Cpath d='M0,40 Q120,10 240,35 T480,30 T720,45 T960,25 T1200,40 T1440,30 L1440,80 L0,80Z' fill='%230d0f1c'/%3E%3C/svg%3E") no-repeat bottom center;
+      background-size: cover;
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    .hero-title {
+      font-size: clamp(2.5rem, 7vw, 5rem);
+      color: var(--text-primary);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.25rem;
+    }
+    .hero-subtitle {
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      color: var(--text-secondary);
+      max-width: 580px;
+      margin: 0 auto;
+      line-height: 1.75;
+    }
+
+    /* ── Avalanche Field ────────────────────────────────────── */
+    .avalanche-field {
+      background: var(--bg-deep);
+      padding: clamp(3rem, 6vw, 5rem) clamp(1rem, 4vw, 2rem) clamp(4rem, 8vw, 7rem);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ── Snow Blocks Grid ───────────────────────────────────── */
+    .snow-blocks {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      position: relative;
+    }
+    @media (min-width: 768px) {
+      .snow-blocks {
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+      }
+    }
+
+    /* ── Individual Snow Block ───────────────────────────────── */
+    .snow-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border-dim);
+      border-radius: 16px;
+      padding: clamp(2rem, 4vw, 3rem);
+      cursor: default;
+      position: relative;
+      will-change: transform, opacity;
+      transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+
+    /* ── Hover — picked up from snow ────────────────────────── */
+    .snow-block.landed:hover {
+      transform: translateY(-8px) !important;
+      box-shadow:
+        0 20px 40px rgba(0,0,0,0.3),
+        0 0 20px rgba(14,165,233,0.1);
+      border-color: var(--border-hover);
+    }
+
+    /* ── Block content styling ──────────────────────────────── */
+    .snow-block .block-number {
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+      opacity: 0.6;
+    }
+    .snow-block .block-title {
+      font-size: clamp(1.4rem, 3vw, 1.75rem);
+      color: var(--text-muted);
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      margin-bottom: 1rem;
+      transition: color 0.5s;
+    }
+    .snow-block:hover .block-title {
+      color: var(--text-primary);
+    }
+    .snow-block .block-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.75;
+      transition: color 0.5s;
+    }
+    .snow-block:hover .block-desc {
+      color: var(--text-secondary);
+    }
+    .snow-block .block-list {
+      margin-top: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .snow-block .block-list li {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      padding-left: 1.25rem;
+      position: relative;
+      line-height: 1.6;
+      transition: color 0.5s;
+    }
+    .snow-block:hover .block-list li {
+      color: var(--text-secondary);
+    }
+    .snow-block .block-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.55em;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: 0.3;
+      transition: opacity 0.5s;
+    }
+    .snow-block:hover .block-list li::before {
+      opacity: 1;
+    }
+
+    /* ── Yeti Footprint Trail ───────────────────────────────── */
+    .footprint-trail {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+    .footprint-trail.visible {
+      opacity: 1;
+    }
+    .footprint-trail svg {
+      width: 100%;
+      height: 100%;
+    }
+    .snow-block {
+      z-index: 1;
+    }
+
+    /* ── CTA Section ────────────────────────────────────────── */
+    .avalanche-cta {
+      text-align: center;
+      padding: clamp(4rem, 8vw, 6rem) clamp(1rem, 4vw, 2rem);
+      background: var(--bg-void);
+    }
+    .avalanche-cta h2 {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+    .avalanche-cta p {
+      color: var(--text-secondary);
+      max-width: 480px;
+      margin: 0 auto 2rem;
+      line-height: 1.75;
+    }
+  </style>
 </head>
 <body>
 
@@ -37,23 +231,27 @@
     </div>
   </nav>
 
-  <!-- PAGE HEADER -->
-  <section id="page-header" class="page-header">
+  <!-- AVALANCHE HERO -->
+  <section class="avalanche-hero">
     <div class="container">
-      <p class="section-eyebrow">What We Do</p>
-      <h1 class="section-title">Our Services</h1>
-      <p class="section-subtitle">
+      <p class="hero-eyebrow reveal">What We Do</p>
+      <h1 class="hero-title word-reveal">Our Services</h1>
+      <p class="hero-subtitle reveal" data-delay="0.2s">
         Everything your business needs to compete in a digital world — development, marketing, automation, and design — under one roof.
       </p>
     </div>
   </section>
 
-  <!-- SERVICE BLOCKS -->
-  <section id="services-detail">
-    <div class="container">
+  <!-- AVALANCHE FIELD — Snow blocks cascade in -->
+  <section class="avalanche-field" id="avalanche-field">
+    <div class="snow-blocks" id="snow-blocks">
 
-      <!-- Web & Software Development -->
-      <div class="service-block">
+      <!-- Footprint trail SVG (drawn by JS after blocks land) -->
+      <div class="footprint-trail" id="footprint-trail"></div>
+
+      <!-- Block 1 — Web & Software Development -->
+      <div class="snow-block" data-index="0">
+        <p class="block-number">01</p>
         <h2 class="block-title">Web &amp; Software Development</h2>
         <p class="block-desc">
           Custom-built websites, web applications, and software solutions engineered around the way your business actually works. No templates, no compromises — just clean, performant code tailored to your goals.
@@ -68,8 +266,9 @@
         </ul>
       </div>
 
-      <!-- Digital Marketing & SEO -->
-      <div class="service-block">
+      <!-- Block 2 — Digital Marketing & SEO -->
+      <div class="snow-block" data-index="1">
+        <p class="block-number">02</p>
         <h2 class="block-title">Digital Marketing &amp; SEO</h2>
         <p class="block-desc">
           Visibility that compounds over time. We build search engine strategies, run targeted campaigns, and automate your social presence so your business gets found by the right people without requiring constant manual effort.
@@ -84,8 +283,9 @@
         </ul>
       </div>
 
-      <!-- AI Automation -->
-      <div class="service-block">
+      <!-- Block 3 — AI Automation -->
+      <div class="snow-block" data-index="2">
+        <p class="block-number">03</p>
         <h2 class="block-title">AI Automation</h2>
         <p class="block-desc">
           Practical, reliable AI integrations that eliminate repetitive work and free up your team's time. We focus on automations that deliver measurable results today — not experimental demos that sound impressive but go nowhere.
@@ -100,8 +300,9 @@
         </ul>
       </div>
 
-      <!-- Strategic Design -->
-      <div class="service-block">
+      <!-- Block 4 — Strategic Design -->
+      <div class="snow-block" data-index="3">
+        <p class="block-number">04</p>
         <h2 class="block-title">Strategic Design</h2>
         <p class="block-desc">
           Design that does more than look good — it communicates brand clarity, builds trust, and drives customer decisions. From brand identity to UI/UX, every visual touchpoint is intentional.
@@ -117,6 +318,13 @@
       </div>
 
     </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="avalanche-cta reveal">
+    <h2>Ready to Start?</h2>
+    <p>Let's talk about what your business needs and build something that moves the needle.</p>
+    <a href="contact.html" class="btn-primary">Get Started</a>
   </section>
 
   <!-- FOOTER -->
@@ -145,13 +353,11 @@
           <h4>Get In Touch</h4>
           <a href="mailto:hello@icecaplabs.com" class="footer-email">hello@icecaplabs.com</a>
           <div class="footer-socials">
-            <!-- X / Twitter -->
             <a href="#" aria-label="Ice Cap Labs on X" class="social-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.259 5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
               </svg>
             </a>
-            <!-- LinkedIn -->
             <a href="#" aria-label="Ice Cap Labs on LinkedIn" class="social-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
@@ -170,5 +376,162 @@
   </footer>
 
   <script src="script.js"></script>
+  <script>
+    // ── Avalanche — scroll-progress driven ────────────────────
+    (function() {
+      const field = document.getElementById('avalanche-field');
+      const blocks = Array.from(document.querySelectorAll('.snow-block'));
+      const trailEl = document.getElementById('footprint-trail');
+      if (!field || !blocks.length) return;
+
+      // Starting transforms for each block (stacked, rotated, offset)
+      const starts = [
+        { y: -200, x: -80, rot: -4 },
+        { y: -260, x: 90,  rot: 3.5 },
+        { y: -320, x: -60, rot: 3 },
+        { y: -380, x: 70,  rot: -3.5 },
+      ];
+
+      // Each block triggers at a different scroll progress threshold
+      // Block 0 starts at 0%, block 1 at 15%, etc. Each takes 25% of scroll range to land.
+      const stagger = 0.15;
+      const blockDuration = 0.30;
+
+      let allLanded = false;
+
+      function easeOut(t) {
+        // cubic-bezier approximation — fast start, soft landing
+        return 1 - Math.pow(1 - t, 3);
+      }
+
+      function update() {
+        const rect = field.getBoundingClientRect();
+        const vh = window.innerHeight;
+
+        // progress: 0 when section top hits viewport bottom, 1 when section top reaches 20% from viewport top
+        const raw = (vh - rect.top) / (vh * 0.8);
+        const progress = Math.max(0, Math.min(1, raw));
+
+        let landedCount = 0;
+
+        blocks.forEach((block, i) => {
+          const start = starts[i] || starts[0];
+          const blockStart = i * stagger;
+          const blockEnd = blockStart + blockDuration;
+
+          // How far through this block's individual animation (0 to 1)
+          let t = (progress - blockStart) / blockDuration;
+          t = Math.max(0, Math.min(1, t));
+          const e = easeOut(t);
+
+          const y = start.y * (1 - e);
+          const x = start.x * (1 - e);
+          const rot = start.rot * (1 - e);
+
+          block.style.opacity = t > 0 ? Math.min(1, t * 4) : 0;
+          block.style.transform = `translateY(${y}px) translateX(${x}px) rotate(${rot}deg)`;
+
+          if (t >= 1) {
+            landedCount++;
+            if (!block.classList.contains('landed')) {
+              block.classList.add('landed');
+              block.style.transform = '';
+              block.style.opacity = '';
+            }
+          } else {
+            block.classList.remove('landed');
+          }
+        });
+
+        // Show footprint trail once all blocks have landed
+        if (landedCount === blocks.length && !allLanded) {
+          allLanded = true;
+          drawFootprintTrail();
+        }
+        if (landedCount < blocks.length) {
+          allLanded = false;
+          trailEl.classList.remove('visible');
+        }
+      }
+
+      window.addEventListener('scroll', update, { passive: true });
+      update(); // initial check
+
+      // ── Yeti footprint trail ──────────────────────────────────
+      function drawFootprintTrail() {
+        if (trailEl.querySelector('svg')) {
+          trailEl.classList.add('visible');
+          return;
+        }
+
+        const container = document.getElementById('snow-blocks');
+        const containerRect = container.getBoundingClientRect();
+
+        const points = blocks.map(b => {
+          const r = b.getBoundingClientRect();
+          return {
+            x: r.left + r.width / 2 - containerRect.left,
+            y: r.top + r.height - containerRect.top - 10
+          };
+        });
+
+        if (points.length < 2) return;
+
+        const svgNS = 'http://www.w3.org/2000/svg';
+        const svg = document.createElementNS(svgNS, 'svg');
+        svg.setAttribute('viewBox', `0 0 ${containerRect.width} ${containerRect.height}`);
+        svg.setAttribute('preserveAspectRatio', 'none');
+        svg.style.width = '100%';
+        svg.style.height = '100%';
+
+        let d = `M${points[0].x},${points[0].y}`;
+        for (let i = 1; i < points.length; i++) {
+          const prev = points[i - 1];
+          const curr = points[i];
+          const cpX1 = prev.x + (curr.x - prev.x) * 0.5;
+          const cpX2 = prev.x + (curr.x - prev.x) * 0.5;
+          d += ` C${cpX1},${prev.y} ${cpX2},${curr.y} ${curr.x},${curr.y}`;
+        }
+
+        const path = document.createElementNS(svgNS, 'path');
+        path.setAttribute('d', d);
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', 'rgba(14,165,233,0.12)');
+        path.setAttribute('stroke-width', '2');
+        path.setAttribute('stroke-dasharray', '8 12');
+        path.setAttribute('stroke-linecap', 'round');
+        svg.appendChild(path);
+
+        // Yeti footprints along the path
+        const pathLen = path.getTotalLength();
+        const count = 12;
+        for (let i = 0; i <= count; i++) {
+          const t = i / count;
+          const pt = path.getPointAtLength(t * pathLen);
+          const next = path.getPointAtLength(Math.min(1, t + 0.02) * pathLen);
+          const angle = Math.atan2(next.y - pt.y, next.x - pt.x);
+          const px = Math.cos(angle + Math.PI / 2) * 6;
+          const py = Math.sin(angle + Math.PI / 2) * 6;
+
+          [[-1, 10], [1, -10]].forEach(([side, rotOff]) => {
+            const foot = document.createElementNS(svgNS, 'ellipse');
+            foot.setAttribute('cx', pt.x + px * side);
+            foot.setAttribute('cy', pt.y + py * side);
+            foot.setAttribute('rx', '4');
+            foot.setAttribute('ry', '6');
+            foot.setAttribute('transform', `rotate(${angle * 180 / Math.PI + rotOff}, ${pt.x + px * side}, ${pt.y + py * side})`);
+            foot.setAttribute('fill', 'rgba(14,165,233,0.1)');
+            foot.setAttribute('stroke', 'rgba(14,165,233,0.15)');
+            foot.setAttribute('stroke-width', '1');
+            svg.appendChild(foot);
+          });
+        }
+
+        trailEl.innerHTML = '';
+        trailEl.appendChild(svg);
+        requestAnimationFrame(() => trailEl.classList.add('visible'));
+      }
+    })();
+  </script>
 </body>
 </html>

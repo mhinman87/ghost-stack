@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initContactForm();
   initFooterYear();
   initSnowflakeCursor();
+  initTileStrip();
 });
 
 
@@ -169,85 +170,117 @@ function initSnowflakeCursor() {
   // Skip on touch-only devices
   if (!window.matchMedia('(hover: hover)').matches) return;
 
-  const flakeSVG = (size) => {
-    const s = size;
-    const h = s / 2;
-    // 6-pointed snowflake: 3 crossing lines + small branches
-    const arm = h * 0.85;
-    const br = arm * 0.45;  // branch length
-    const ba = arm * 0.6;   // branch start distance from center
-    let d = '';
-    for (let i = 0; i < 6; i++) {
-      const a = (i * 60) * Math.PI / 180;
-      const cos = Math.cos(a);
-      const sin = Math.sin(a);
-      // Main arm
-      d += `M${h},${h} L${h + cos * arm},${h + sin * arm} `;
-      // Branch
-      const bx = h + cos * ba;
-      const by = h + sin * ba;
-      const la = a + 0.55;
-      const ra = a - 0.55;
-      d += `M${bx},${by} L${bx + Math.cos(la) * br},${by + Math.sin(la) * br} `;
-      d += `M${bx},${by} L${bx + Math.cos(ra) * br},${by + Math.sin(ra) * br} `;
-    }
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="${s}" height="${s}" viewBox="0 0 ${s} ${s}"><path d="${d}" stroke="currentColor" stroke-width="${s * 0.07}" stroke-linecap="round" fill="none"/></svg>`;
-  };
+  const cursorSize = 50;
 
   const cursor = document.createElement('div');
   cursor.className = 'snowflake-cursor';
-  cursor.innerHTML = flakeSVG(36);
+  cursor.innerHTML = `<img src="yeti-hand-pointer.png" width="${cursorSize}" alt="" draggable="false" style="pointer-events:none; height:auto;">`;
+  cursor.style.display = 'none';
 
-  const trail = document.createElement('div');
-  trail.className = 'snowflake-trail';
-  trail.innerHTML = flakeSVG(60);
-
-  document.body.appendChild(trail);
   document.body.appendChild(cursor);
 
-  // Hide default cursor everywhere
+  // Only hide default cursor on hoverable elements
   const cursorStyle = document.createElement('style');
-  cursorStyle.textContent = '*, *::before, *::after { cursor: none !important; }';
+  cursorStyle.textContent = 'a, button, input, textarea, select, [role="button"], .service-card, .service-block, .why-item, .process-step, .nav-cta, .nav-mobile-cta, .btn-primary, .social-icon { cursor: none !important; }';
   document.head.appendChild(cursorStyle);
 
-  let mx = -100, my = -100;
-  let tx = -100, ty = -100;
   let hovering = false;
 
   document.addEventListener('mousemove', (e) => {
-    mx = e.clientX;
-    my = e.clientY;
-    cursor.style.left = (mx - 18) + 'px';
-    cursor.style.top  = (my - 18) + 'px';
+    cursor.style.left = (e.clientX - cursorSize * 0.55) + 'px';
+    cursor.style.top  = (e.clientY - cursorSize * 0.15) + 'px';
 
-    // Detect if over a clickable/hoverable element
     const target = e.target.closest('a, button, input, textarea, select, [role="button"], .service-card, .service-block, .why-item, .process-step, .nav-cta, .nav-mobile-cta, .btn-primary, .social-icon');
     const isHovering = !!target;
     if (isHovering !== hovering) {
       hovering = isHovering;
-      cursor.classList.toggle('hovering', hovering);
-      trail.classList.toggle('hovering', hovering);
+      cursor.style.display = hovering ? '' : 'none';
     }
   });
+}
 
-  // Trail follows with easing
-  function animate() {
-    tx += (mx - tx) * 0.12;
-    ty += (my - ty) * 0.12;
-    trail.style.left = (tx - 30) + 'px';
-    trail.style.top  = (ty - 30) + 'px';
-    requestAnimationFrame(animate);
+/* ── Tile strip ──────────────────────────────────────────── */
+function initTileStrip() {
+  const grid = document.getElementById('tile-grid');
+  if (!grid) return;
+
+  const symbols = ['×', '○', 'W', '>', '✳', '⊕'];
+  const cellSize = 40;
+  const gap = 4;
+  let cols = 0;
+  let rows = 0;
+  let tiles = [];
+
+  function build() {
+    grid.innerHTML = '';
+    const rect = grid.getBoundingClientRect();
+    cols = Math.floor((rect.width + gap) / (cellSize + gap));
+    rows = Math.floor((rect.height + gap) / (cellSize + gap));
+    tiles = [];
+
+    for (let i = 0; i < cols * rows; i++) {
+      const tile = document.createElement('div');
+      tile.className = 'tile';
+      const symbol = symbols[Math.floor(Math.random() * symbols.length)];
+      tile.innerHTML =
+        '<div class="tile-inner">' +
+          '<div class="tile-front"></div>' +
+          '<div class="tile-back">' + symbol + '</div>' +
+        '</div>';
+      tile.dataset.index = i;
+      grid.appendChild(tile);
+      tiles.push(tile);
+    }
   }
-  animate();
 
-  // Hide when cursor leaves the window
-  document.addEventListener('mouseleave', () => {
-    cursor.style.opacity = '0';
-    trail.style.opacity  = '0';
+  function flipTile(tile, delay) {
+    if (tile.classList.contains('flipped')) return;
+    setTimeout(() => {
+      tile.classList.add('flipped');
+      setTimeout(() => {
+        tile.classList.remove('flipped');
+      }, 800 + delay);
+    }, delay);
+  }
+
+  function getNeighbors(idx) {
+    const r = Math.floor(idx / cols);
+    const c = idx % cols;
+    const neighbors = [];
+    for (let dr = -1; dr <= 1; dr++) {
+      for (let dc = -1; dc <= 1; dc++) {
+        if (dr === 0 && dc === 0) continue;
+        const nr = r + dr;
+        const nc = c + dc;
+        if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+          neighbors.push(nr * cols + nc);
+        }
+      }
+    }
+    return neighbors;
+  }
+
+  grid.addEventListener('mouseover', (e) => {
+    const tile = e.target.closest('.tile');
+    if (!tile) return;
+    const idx = +tile.dataset.index;
+
+    // Flip the hovered tile immediately
+    flipTile(tile, 0);
+
+    // Flip neighbors with a slight stagger
+    const neighbors = getNeighbors(idx);
+    neighbors.forEach((ni) => {
+      flipTile(tiles[ni], 60 + Math.random() * 80);
+    });
   });
-  document.addEventListener('mouseenter', () => {
-    cursor.style.opacity = '0.9';
-    trail.style.opacity  = '0.35';
+
+  build();
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(build, 200);
   });
 }
 
