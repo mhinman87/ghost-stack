@@ -104,6 +104,7 @@
       fill: none;
       stroke-linecap: round;
       stroke-linejoin: round;
+      stroke-dasharray: 12 8;
     }
     .trail-path-fill {
       stroke: var(--accent-bright);
@@ -111,8 +112,8 @@
       fill: none;
       stroke-linecap: round;
       stroke-linejoin: round;
+      stroke-dasharray: 12 8;
       filter: drop-shadow(0 0 8px rgba(14,165,233,0.5));
-      transition: stroke-dashoffset 0.05s linear;
     }
     @media (max-width: 640px) {
       .trail-svg-wrap { display: none; }
@@ -511,7 +512,10 @@
       if (!wrap || !section || !baseCamp) return;
 
       let fillPath = null;
+      let clipRect = null;
+      let trailSvg = null;
       let totalLen = 0;
+      let fillTotalH = 0;
       let markerLengths = [];
 
       function clamp(min, val, max) { return Math.max(min, Math.min(max, val)); }
@@ -677,16 +681,31 @@
         bgPath.setAttribute('class', 'trail-path-bg');
         svg.appendChild(bgPath);
 
+        // Clip rect for fill reveal — grows from bottom up
+        const clipId = 'trail-clip-' + Date.now();
+        const defs = document.createElementNS(svgNS, 'defs');
+        const clipPathEl = document.createElementNS(svgNS, 'clipPath');
+        clipPathEl.setAttribute('id', clipId);
+        clipRect = document.createElementNS(svgNS, 'rect');
+        clipRect.setAttribute('x', '0');
+        clipRect.setAttribute('width', svgW);
+        clipRect.setAttribute('y', totalH);
+        clipRect.setAttribute('height', '0');
+        clipPathEl.appendChild(clipRect);
+        defs.appendChild(clipPathEl);
+        svg.appendChild(defs);
+
         fillPath = document.createElementNS(svgNS, 'path');
         fillPath.setAttribute('d', d);
         fillPath.setAttribute('class', 'trail-path-fill');
+        fillPath.setAttribute('clip-path', `url(#${clipId})`);
         svg.appendChild(fillPath);
 
         wrap.appendChild(svg);
+        trailSvg = svg;
 
         totalLen = fillPath.getTotalLength();
-        fillPath.style.strokeDasharray = totalLen;
-        fillPath.style.strokeDashoffset = totalLen; // start empty
+        fillTotalH = totalH;
 
         // Place markers directly on the path at each waypoint (skip first = start point)
         // waypoints[1..n-1] = steps, waypoints[n] = summit
@@ -749,20 +768,23 @@
       }
 
       function updateTrail() {
-        if (!fillPath) return;
+        if (!clipRect) return;
         const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
         const scrolled = window.scrollY;
         // progress: 0 at bottom (page load), 1 at top — 5% delay before filling starts
         const raw = 1 - (scrolled / maxScroll);
         const progress = Math.max(0, Math.min(1, (raw - 0.05) / 0.95));
-        fillPath.style.strokeDashoffset = totalLen * (1 - progress);
+        const clipH = progress * fillTotalH;
+        clipRect.setAttribute('y', fillTotalH - clipH);
+        clipRect.setAttribute('height', clipH);
 
-        // Reveal markers when the trail fill reaches them
-        const filledLen = progress * totalLen;
+        // Reveal markers when the clip reaches their y-position
+        const clipTop = fillTotalH - clipH;
         const genMarkers = wrap.querySelectorAll('.trail-marker-generated');
         markerLengths.forEach((len, i) => {
           if (i < genMarkers.length) {
-            const reached = filledLen >= len;
+            const markerY = parseFloat(genMarkers[i].style.top) + 14;
+            const reached = markerY >= clipTop;
             genMarkers[i].style.opacity = reached ? '1' : '0';
             genMarkers[i].style.transform = reached ? 'scale(1)' : 'scale(0.5)';
             if (reached) {
