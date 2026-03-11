@@ -11,8 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initNav();
   initContactForm();
   initFooterYear();
-  initSnowflakeCursor();
   initTileStrip();
+  initPixelTitle();
 });
 
 
@@ -165,40 +165,6 @@ function initContactForm() {
   });
 }
 
-/* ── Snowflake cursor ────────────────────────────────────── */
-function initSnowflakeCursor() {
-  // Skip on touch-only devices
-  if (!window.matchMedia('(hover: hover)').matches) return;
-
-  const cursorSize = 50;
-
-  const cursor = document.createElement('div');
-  cursor.className = 'snowflake-cursor';
-  cursor.innerHTML = `<img src="yeti-hand-pointer.png" width="${cursorSize}" alt="" draggable="false" style="pointer-events:none; height:auto;">`;
-  cursor.style.display = 'none';
-
-  document.body.appendChild(cursor);
-
-  // Only hide default cursor on hoverable elements
-  const cursorStyle = document.createElement('style');
-  cursorStyle.textContent = 'a, button, input, textarea, select, [role="button"], .service-card, .service-block, .why-item, .process-step, .nav-cta, .nav-mobile-cta, .btn-primary, .social-icon { cursor: none !important; }';
-  document.head.appendChild(cursorStyle);
-
-  let hovering = false;
-
-  document.addEventListener('mousemove', (e) => {
-    cursor.style.left = (e.clientX - cursorSize * 0.55) + 'px';
-    cursor.style.top  = (e.clientY - cursorSize * 0.15) + 'px';
-
-    const target = e.target.closest('a, button, input, textarea, select, [role="button"], .service-card, .service-block, .why-item, .process-step, .nav-cta, .nav-mobile-cta, .btn-primary, .social-icon');
-    const isHovering = !!target;
-    if (isHovering !== hovering) {
-      hovering = isHovering;
-      cursor.style.display = hovering ? '' : 'none';
-    }
-  });
-}
-
 /* ── Tile strip ──────────────────────────────────────────── */
 function initTileStrip() {
   const grid = document.getElementById('tile-grid');
@@ -273,6 +239,130 @@ function initTileStrip() {
     neighbors.forEach((ni) => {
       flipTile(tiles[ni], 60 + Math.random() * 80);
     });
+  });
+
+  build();
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(build, 200);
+  });
+}
+
+/* ── Pixel title (service pages) ──────────────────────────── */
+function initPixelTitle() {
+  const hero = document.querySelector('.pixel-hero');
+  const grid = document.getElementById('pixel-title-grid');
+  if (!hero || !grid) return;
+
+  const titleEl = hero.querySelector('.pixel-hero-title');
+  const titleText = titleEl ? titleEl.textContent.trim() : 'DESIGN';
+
+  const cellSize = 8;
+  const gap = 2;
+  const step = cellSize + gap;
+  let cols = 0;
+  let rows = 0;
+  let tileMap = {};  // key: "col,row" → tile element
+  function build() {
+    grid.innerHTML = '';
+    tileMap = {};
+
+    const w = hero.offsetWidth;
+    const h = hero.offsetHeight;
+    cols = Math.floor(w / step);
+    rows = Math.floor(h / step);
+
+    // Offscreen canvas to sample text shape
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+
+    // Draw text matching the CSS title — scale font to fit viewport width
+    const padding = w * 0.08; // 4% each side
+    let fontSize = Math.min(w * 0.18, 320);
+    ctx.font = `700 ${fontSize}px Outfit, sans-serif`;
+    let measured = ctx.measureText(titleText).width;
+    if (measured > w - padding) {
+      fontSize *= (w - padding) / measured;
+    }
+    ctx.font = `700 ${fontSize}px Outfit, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#fff';
+    ctx.fillText(titleText, w / 2, h / 2);
+
+    const imageData = ctx.getImageData(0, 0, w, h).data;
+
+    grid.style.setProperty('--cell', cellSize + 'px');
+
+    // Create tiles only where text pixels exist
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const px = c * step + Math.floor(step / 2);
+        const py = r * step + Math.floor(step / 2);
+        const idx = (py * w + px) * 4;
+        const alpha = imageData[idx + 3];
+
+        if (alpha > 128) {
+          const tile = document.createElement('div');
+          tile.className = 'ptile';
+          tile.style.left = (c * step) + 'px';
+          tile.style.top = (r * step) + 'px';
+          tile.innerHTML =
+            '<div class="ptile-inner">' +
+              '<div class="ptile-front"></div>' +
+              '<div class="ptile-back"></div>' +
+            '</div>';
+          tile.dataset.col = c;
+          tile.dataset.row = r;
+          grid.appendChild(tile);
+          tileMap[c + ',' + r] = tile;
+        }
+      }
+    }
+
+    // Sync CSS title font size so the fallback text matches before grid appears
+    if (titleEl) titleEl.style.fontSize = fontSize + 'px';
+
+    hero.classList.add('pixels-active');
+  }
+
+  function flipTile(tile, delay) {
+    if (!tile || tile.classList.contains('flipped')) return;
+    setTimeout(() => {
+      tile.classList.add('flipped');
+      setTimeout(() => {
+        tile.classList.remove('flipped');
+      }, 900 + delay);
+    }, delay);
+  }
+
+  function flipAt(c, r, delay) {
+    const tile = tileMap[c + ',' + r];
+    if (tile) flipTile(tile, delay);
+  }
+
+  // Track mouse position and flip tiles under cursor + neighbors
+  grid.addEventListener('mousemove', (e) => {
+    const rect = grid.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const c = Math.floor(mx / step);
+    const r = Math.floor(my / step);
+
+    // Flip hovered tile
+    flipAt(c, r, 0);
+
+    // Flip neighbors
+    for (let dr = -1; dr <= 1; dr++) {
+      for (let dc = -1; dc <= 1; dc++) {
+        if (dr === 0 && dc === 0) continue;
+        flipAt(c + dc, r + dr, 40 + Math.random() * 60);
+      }
+    }
   });
 
   build();

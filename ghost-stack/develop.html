@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Services — Ice Cap Labs</title>
-  <meta name="description" content="Web development, digital marketing, AI automation, and strategic design services from Ice Cap Labs." />
+  <title>Development — Ice Cap Labs</title>
+  <meta name="description" content="Custom web and software development from Ice Cap Labs — websites, web apps, e-commerce, APIs, and ongoing maintenance." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -37,24 +37,20 @@
     </div>
   </nav>
 
-  <!-- HERO -->
-  <header class="page-header">
-    <p class="section-eyebrow reveal">What We Do</p>
-    <h1 class="page-title word-reveal">Our Services</h1>
-    <p class="page-subtitle reveal" data-delay="0.2">
-      Everything your business needs to compete in a digital world — development, marketing, automation, and design — under one roof.
-    </p>
-  </header>
+  <!-- PIXEL HERO -->
+  <section class="pixel-hero">
+    <h1 class="pixel-hero-title" aria-label="Develop">DEVELOP</h1>
+    <div class="pixel-title-grid" id="pixel-title-grid"></div>
+  </section>
 
-  <!-- SERVICE BLOCKS -->
+  <!-- SERVICE DETAILS -->
   <section class="blocks-section" style="background: var(--bg-deep);">
     <div class="blocks-container">
-
       <div class="service-block reveal">
         <div class="block-inner">
           <div>
-            <p class="block-number">01</p>
-            <h2 class="block-title">Web &amp; Software Development</h2>
+            <p class="block-number">Web &amp; Software</p>
+            <h2 class="block-title">Code Built Around Your Business</h2>
           </div>
           <div>
             <p class="block-desc">
@@ -68,87 +64,16 @@
               <li>API development and third-party integrations</li>
               <li>Ongoing maintenance and performance optimization</li>
             </ul>
-            <a href="develop.html" class="btn-primary" style="margin-top: 1.5rem;">Explore Development</a>
           </div>
         </div>
       </div>
-
-      <div class="service-block reveal">
-        <div class="block-inner">
-          <div>
-            <p class="block-number">02</p>
-            <h2 class="block-title">Digital Marketing &amp; SEO</h2>
-          </div>
-          <div>
-            <p class="block-desc">
-              Visibility that compounds over time. We build search engine strategies, run targeted campaigns, and automate your social presence so your business gets found by the right people without requiring constant manual effort.
-            </p>
-            <ul class="block-list">
-              <li>Search engine optimization (on-page and technical SEO)</li>
-              <li>Content strategy and creation</li>
-              <li>Social media management and automation</li>
-              <li>Paid advertising (Google Ads, Meta, LinkedIn)</li>
-              <li>Email marketing and drip campaigns</li>
-              <li>Analytics, reporting, and conversion tracking</li>
-            </ul>
-            <a href="marketing.html" class="btn-primary" style="margin-top: 1.5rem;">Explore Marketing</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="service-block reveal">
-        <div class="block-inner">
-          <div>
-            <p class="block-number">03</p>
-            <h2 class="block-title">AI Automation</h2>
-          </div>
-          <div>
-            <p class="block-desc">
-              Practical, reliable AI integrations that eliminate repetitive work and free up your team's time. We focus on automations that deliver measurable results today — not experimental demos that sound impressive but go nowhere.
-            </p>
-            <ul class="block-list">
-              <li>Workflow automation and process optimization</li>
-              <li>AI-powered customer support and chatbots</li>
-              <li>Document processing and data extraction</li>
-              <li>Automated reporting and business intelligence</li>
-              <li>CRM and sales pipeline automation</li>
-              <li>Custom AI tool development for your specific use case</li>
-            </ul>
-            <a href="automate.html" class="btn-primary" style="margin-top: 1.5rem;">Explore AI Automation</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="service-block reveal">
-        <div class="block-inner">
-          <div>
-            <p class="block-number">04</p>
-            <h2 class="block-title">Strategic Design</h2>
-          </div>
-          <div>
-            <p class="block-desc">
-              Design that does more than look good — it communicates brand clarity, builds trust, and drives customer decisions. From brand identity to UI/UX, every visual touchpoint is intentional.
-            </p>
-            <ul class="block-list">
-              <li>Brand identity and logo design</li>
-              <li>UI/UX design for web and mobile</li>
-              <li>Marketing collateral and print design</li>
-              <li>Presentation and pitch deck design</li>
-              <li>Design systems and style guides</li>
-              <li>Customer journey mapping and experience design</li>
-            </ul>
-            <a href="design.html" class="btn-primary" style="margin-top: 1.5rem;">Explore Design</a>
-          </div>
-        </div>
-      </div>
-
     </div>
   </section>
 
   <!-- CTA -->
   <section class="page-cta reveal">
-    <h2>Ready to Start?</h2>
-    <p>Let's talk about what your business needs and build something that moves the needle.</p>
+    <h2>Ready to Build?</h2>
+    <p>Let's talk about what your business needs and engineer the right solution.</p>
     <a href="contact.html" class="btn-primary">Get Started</a>
   </section>
 
@@ -163,7 +88,6 @@
           </a>
           <p class="footer-tagline">Your full-stack technology partner for modern business.</p>
         </div>
-
         <div class="footer-links">
           <h4>Navigation</h4>
           <ul>
@@ -173,7 +97,6 @@
             <li><a href="contact.html">Contact</a></li>
           </ul>
         </div>
-
         <div class="footer-contact">
           <h4>Get In Touch</h4>
           <a href="mailto:hello@icecaplabs.com" class="footer-email">hello@icecaplabs.com</a>
@@ -193,7 +116,6 @@
           </div>
         </div>
       </div>
-
       <div class="footer-bar">
         <p>&copy; <span id="footer-year"></span> Ice Cap Labs. All rights reserved.</p>
       </div>
