@@ -379,7 +379,7 @@ function initPixelTitle() {
 }
 
 
-/* ── Process timeline (scroll-driven dotted line) ─────────── */
+/* ── Process timeline (looping line fill animation) ────────── */
 function initProcessTimeline() {
   const stepsWrap = document.getElementById('process-steps');
   const lineFill = document.getElementById('process-line-fill');
@@ -388,20 +388,18 @@ function initProcessTimeline() {
 
   const steps = stepsWrap.querySelectorAll('.process-step');
   const thresholds = [0.05, 0.3, 0.55, 0.8];
+  const duration = 4000; // ms to fill the line
+  const pauseAtEnd = 1500; // ms to hold at 100% before resetting
+  let animId = null;
+  let startTime = null;
 
-  function onScroll() {
-    const rect = stepsWrap.getBoundingClientRect();
-    const vh = window.innerHeight;
-    // Progress: 0 when section enters bottom of viewport, 1 when top reaches mid-screen
-    const start = vh;          // bottom edge enters viewport
-    const end = vh * 0.3;      // top of section reaches 30% from top
-    const progress = Math.max(0, Math.min(1, (start - rect.top) / (start - end)));
+  // CTA always visible
+  if (ctaWrap) ctaWrap.classList.add('visible');
 
-    // Reveal the dotted line left-to-right
+  function updateVisuals(progress) {
     const clipRight = Math.max(0, 100 - progress * 100);
     lineFill.style.clipPath = `inset(0 ${clipRight}% 0 0)`;
 
-    // Reveal steps as line reaches them
     steps.forEach((step, i) => {
       if (progress >= thresholds[i]) {
         step.classList.add('reached');
@@ -409,19 +407,48 @@ function initProcessTimeline() {
         step.classList.remove('reached');
       }
     });
+  }
 
-    // Show CTA when line is complete
-    if (ctaWrap) {
-      if (progress >= 0.95) {
-        ctaWrap.classList.add('visible');
-      } else {
-        ctaWrap.classList.remove('visible');
-      }
+  function animate(timestamp) {
+    if (!startTime) startTime = timestamp;
+    const elapsed = timestamp - startTime;
+    const totalCycle = duration + pauseAtEnd;
+    const cyclePos = elapsed % totalCycle;
+
+    let progress;
+    if (cyclePos < duration) {
+      progress = cyclePos / duration;
+    } else {
+      progress = 1; // hold at full
+    }
+
+    updateVisuals(progress);
+    animId = requestAnimationFrame(animate);
+  }
+
+  function startAnimation() {
+    if (animId) return;
+    startTime = null;
+    animId = requestAnimationFrame(animate);
+  }
+
+  function stopAnimation() {
+    if (animId) {
+      cancelAnimationFrame(animId);
+      animId = null;
     }
   }
 
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
+  // Only animate when the section is visible
+  const observer = new IntersectionObserver(([entry]) => {
+    if (entry.isIntersecting) {
+      startAnimation();
+    } else {
+      stopAnimation();
+      updateVisuals(0);
+    }
+  }, { threshold: 0.1 });
+  observer.observe(stepsWrap);
 }
 
 /* ── Footer year ──────────────────────────────────────────── */

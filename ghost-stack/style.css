@@ -563,7 +563,7 @@ footer {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: var(--accent-dim);
+  background: var(--bg-deep);
   border: 2px solid var(--accent);
   display: flex;
   align-items: center;
@@ -572,6 +572,8 @@ footer {
   font-size: 0.8rem;
   color: var(--accent-bright);
   flex-shrink: 0;
+  position: relative;
+  z-index: 2;
   transition: border-color 0.4s, box-shadow 0.4s;
 }
 .process-step.reached .step-number-wrap {
@@ -591,17 +593,10 @@ footer {
   line-height: 1.7;
 }
 
-/* CTA after timeline completes */
+/* CTA below timeline */
 .process-cta-wrap {
   text-align: center;
   margin-top: 2.5rem;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-.process-cta-wrap.visible {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 /* ── Why Ice Cap Labs ─────────────────────────────────────── */
