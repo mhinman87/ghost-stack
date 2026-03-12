@@ -397,46 +397,73 @@ footer {
 }
 
 .service-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  display: block;
+  perspective: 800px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  background: transparent;
+  border: none;
   border-radius: 16px;
-  padding: 1.75rem;
-  transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
-  will-change: transform;
 }
-.service-card:hover {
+
+.service-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 180px;
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease;
+  border-radius: 16px;
+}
+.service-card:hover .service-card-inner {
+  transform: rotateY(180deg);
+}
+
+.service-card-front,
+.service-card-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem 1.5rem;
+}
+
+.service-card-back {
+  transform: rotateY(180deg);
   border-color: var(--border-hover);
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(14,165,233,0.15);
+  background: var(--bg-card);
+}
+.service-card-back p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
 }
 
 .service-icon-wrap {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   background: var(--accent-dim);
-  border-radius: 12px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1.25rem;
-  transition: background 0.25s;
+  margin-bottom: 1rem;
   flex-shrink: 0;
-}
-.service-card:hover .service-icon-wrap {
-  background: rgba(14,165,233,0.30);
 }
 
 .service-card h3 {
   font-size: 1.05rem;
   color: var(--text-primary);
-  margin-bottom: 0.65rem;
+  margin-bottom: 0;
   line-height: 1.35;
-}
-
-.service-card p {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  line-height: 1.7;
 }
 
 /* ── Process ──────────────────────────────────────────────── */
@@ -448,6 +475,7 @@ footer {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  position: relative;
 }
 
 @media (min-width: 640px) {
@@ -458,25 +486,60 @@ footer {
   }
 }
 
+/* Dotted line container */
+.process-line-wrap {
+  display: none;
+}
+@media (min-width: 640px) {
+  .process-line-wrap {
+    display: block;
+    position: absolute;
+    top: 22px;
+    left: calc(12.5% + 22px);
+    right: calc(12.5% + 22px);
+    height: 2px;
+    pointer-events: none;
+  }
+}
+
+.process-line-bg,
+.process-line-fill {
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    to right,
+    rgba(14,165,233,0.15) 0px,
+    rgba(14,165,233,0.15) 8px,
+    transparent 8px,
+    transparent 16px
+  );
+}
+
+.process-line-fill {
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--accent-bright) 0px,
+    var(--accent-bright) 8px,
+    transparent 8px,
+    transparent 16px
+  );
+  clip-path: inset(0 100% 0 0);
+  box-shadow: 0 0 8px rgba(14,165,233,0.4);
+  transition: clip-path 0.1s linear;
+}
+
 .process-step {
   flex: 1;
   position: relative;
   text-align: center;
   padding: 0 1rem;
+  opacity: 0.25;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
 }
-
-/* Horizontal connector between steps */
-@media (min-width: 640px) {
-  .process-step:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    top: 22px;
-    left: calc(50% + 28px);
-    right: calc(-50% + 28px);
-    height: 1px;
-    background: linear-gradient(to right, var(--accent), rgba(14,165,233,0.15));
-    pointer-events: none;
-  }
+.process-step.reached {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* Mobile: left-aligned with number beside text */
@@ -487,6 +550,8 @@ footer {
     gap: 1.25rem;
     align-items: flex-start;
     padding: 0;
+    opacity: 1;
+    transform: none;
   }
   .process-step .step-number-wrap {
     margin: 0;
@@ -507,6 +572,11 @@ footer {
   font-size: 0.8rem;
   color: var(--accent-bright);
   flex-shrink: 0;
+  transition: border-color 0.4s, box-shadow 0.4s;
+}
+.process-step.reached .step-number-wrap {
+  border-color: var(--accent-bright);
+  box-shadow: 0 0 16px rgba(14,165,233,0.35);
 }
 
 .step-title {
@@ -519,6 +589,19 @@ footer {
   font-size: 0.875rem;
   color: var(--text-secondary);
   line-height: 1.7;
+}
+
+/* CTA after timeline completes */
+.process-cta-wrap {
+  text-align: center;
+  margin-top: 2.5rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.process-cta-wrap.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* ── Why Ice Cap Labs ─────────────────────────────────────── */

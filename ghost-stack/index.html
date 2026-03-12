@@ -78,49 +78,73 @@
         </div>
 
         <div class="services-grid">
-          <div class="service-card reveal" data-delay="0.0">
-            <div class="service-icon-wrap">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="16 18 22 12 16 6"/>
-                <polyline points="8 6 2 12 8 18"/>
-              </svg>
+          <a href="develop.html" class="service-card reveal" data-delay="0.0">
+            <div class="service-card-inner">
+              <div class="service-card-front">
+                <div class="service-icon-wrap">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="16 18 22 12 16 6"/>
+                    <polyline points="8 6 2 12 8 18"/>
+                  </svg>
+                </div>
+                <h3>Web &amp; Software Development</h3>
+              </div>
+              <div class="service-card-back">
+                <p>Custom websites, mobile applications, and tailored software built specifically for your workflows — not generic platforms that almost fit.</p>
+              </div>
             </div>
-            <h3>Web &amp; Software Development</h3>
-            <p>Custom websites, mobile applications, and tailored software built specifically for your workflows — not generic platforms that almost fit.</p>
-          </div>
+          </a>
 
-          <div class="service-card reveal" data-delay="0.1">
-            <div class="service-icon-wrap">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
-                <polyline points="16 7 22 7 22 13"/>
-              </svg>
+          <a href="marketing.html" class="service-card reveal" data-delay="0.15">
+            <div class="service-card-inner">
+              <div class="service-card-front">
+                <div class="service-icon-wrap">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+                    <polyline points="16 7 22 7 22 13"/>
+                  </svg>
+                </div>
+                <h3>Digital Marketing &amp; SEO</h3>
+              </div>
+              <div class="service-card-back">
+                <p>Search engine optimization, digital marketing strategy, and social media automation designed to increase visibility while reducing the manual effort required.</p>
+              </div>
             </div>
-            <h3>Digital Marketing &amp; SEO</h3>
-            <p>Search engine optimization, digital marketing strategy, and social media automation designed to increase visibility while reducing the manual effort required.</p>
-          </div>
+          </a>
 
-          <div class="service-card reveal" data-delay="0.2">
-            <div class="service-icon-wrap">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-              </svg>
+          <a href="automate.html" class="service-card reveal" data-delay="0.3">
+            <div class="service-card-inner">
+              <div class="service-card-front">
+                <div class="service-icon-wrap">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                  </svg>
+                </div>
+                <h3>AI Automation</h3>
+              </div>
+              <div class="service-card-back">
+                <p>Practical AI integrations that save time and reduce repetitive work. Simple, reliable automations that deliver measurable value — not experimental hype.</p>
+              </div>
             </div>
-            <h3>AI Automation</h3>
-            <p>Practical AI integrations that save time and reduce repetitive work. Simple, reliable automations that deliver measurable value — not experimental hype.</p>
-          </div>
+          </a>
 
-          <div class="service-card reveal" data-delay="0.3">
-            <div class="service-icon-wrap">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                <path d="M2 17l10 5 10-5"/>
-                <path d="M2 12l10 5 10-5"/>
-              </svg>
+          <a href="design.html" class="service-card reveal" data-delay="0.45">
+            <div class="service-card-inner">
+              <div class="service-card-front">
+                <div class="service-icon-wrap">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                    <path d="M2 17l10 5 10-5"/>
+                    <path d="M2 12l10 5 10-5"/>
+                  </svg>
+                </div>
+                <h3>Strategic Design</h3>
+              </div>
+              <div class="service-card-back">
+                <p>Design that communicates brand clarity and drives customer decisions — from brand identity to UI and every customer-facing touchpoint in between.</p>
+              </div>
             </div>
-            <h3>Strategic Design</h3>
-            <p>Design that communicates brand clarity and drives customer decisions — from brand identity to UI and every customer-facing touchpoint in between.</p>
-          </div>
+          </a>
         </div>
       </div>
     </section>
@@ -137,27 +161,35 @@
           </p>
         </div>
 
-        <div class="process-steps">
-          <div class="process-step reveal" data-delay="0.0">
+        <div class="process-steps" id="process-steps">
+          <div class="process-line-wrap" aria-hidden="true">
+            <div class="process-line-bg"></div>
+            <div class="process-line-fill" id="process-line-fill"></div>
+          </div>
+          <div class="process-step" data-step="1">
             <div class="step-number-wrap">01</div>
             <h3 class="step-title">Discover</h3>
             <p class="step-desc">We learn your business, goals, and gaps. No jargon — just listening and honest assessment.</p>
           </div>
-          <div class="process-step reveal" data-delay="0.1">
+          <div class="process-step" data-step="2">
             <div class="step-number-wrap">02</div>
             <h3 class="step-title">Design</h3>
             <p class="step-desc">We architect a technology strategy tailored to your size, your customers, and your budget.</p>
           </div>
-          <div class="process-step reveal" data-delay="0.2">
+          <div class="process-step" data-step="3">
             <div class="step-number-wrap">03</div>
             <h3 class="step-title">Build &amp; Launch</h3>
             <p class="step-desc">Development, marketing systems, and automation deployed. You see progress at every step.</p>
           </div>
-          <div class="process-step reveal" data-delay="0.3">
+          <div class="process-step" data-step="4">
             <div class="step-number-wrap">04</div>
             <h3 class="step-title">Grow</h3>
             <p class="step-desc">Ongoing support, optimization, and expansion as your business scales. We grow with you.</p>
           </div>
+        </div>
+
+        <div class="process-cta-wrap">
+          <a href="process.html" class="btn-primary process-cta" id="process-cta">See How It Works</a>
         </div>
       </div>
     </section>

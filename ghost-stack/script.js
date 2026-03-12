@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initFooterYear();
   initTileStrip();
   initPixelTitle();
+  initProcessTimeline();
 });
 
 
@@ -53,12 +54,15 @@ function initScrollReveal() {
   if (!items.length) return;
 
   items.forEach((el) => {
+    const isCard = el.classList.contains('service-card');
+    const dist = isCard ? '80px' : '40px';
+    const dur  = isCard ? '1.2s' : '0.75s';
     el.style.opacity   = '0';
-    el.style.transform = 'translateY(40px)';
+    el.style.transform = `translateY(${dist})`;
     const delay = el.dataset.delay || '0';
     el.style.transition = [
-      `opacity 0.75s cubic-bezier(0.16,1,0.3,1) ${delay}s`,
-      `transform 0.75s cubic-bezier(0.16,1,0.3,1) ${delay}s`,
+      `opacity ${dur} cubic-bezier(0.16,1,0.3,1) ${delay}s`,
+      `transform ${dur} cubic-bezier(0.16,1,0.3,1) ${delay}s`,
     ].join(', ');
   });
 
@@ -372,6 +376,52 @@ function initPixelTitle() {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(build, 200);
   });
+}
+
+
+/* ── Process timeline (scroll-driven dotted line) ─────────── */
+function initProcessTimeline() {
+  const stepsWrap = document.getElementById('process-steps');
+  const lineFill = document.getElementById('process-line-fill');
+  const ctaWrap = document.querySelector('.process-cta-wrap');
+  if (!stepsWrap || !lineFill) return;
+
+  const steps = stepsWrap.querySelectorAll('.process-step');
+  const thresholds = [0.05, 0.3, 0.55, 0.8];
+
+  function onScroll() {
+    const rect = stepsWrap.getBoundingClientRect();
+    const vh = window.innerHeight;
+    // Progress: 0 when section enters bottom of viewport, 1 when top reaches mid-screen
+    const start = vh;          // bottom edge enters viewport
+    const end = vh * 0.3;      // top of section reaches 30% from top
+    const progress = Math.max(0, Math.min(1, (start - rect.top) / (start - end)));
+
+    // Reveal the dotted line left-to-right
+    const clipRight = Math.max(0, 100 - progress * 100);
+    lineFill.style.clipPath = `inset(0 ${clipRight}% 0 0)`;
+
+    // Reveal steps as line reaches them
+    steps.forEach((step, i) => {
+      if (progress >= thresholds[i]) {
+        step.classList.add('reached');
+      } else {
+        step.classList.remove('reached');
+      }
+    });
+
+    // Show CTA when line is complete
+    if (ctaWrap) {
+      if (progress >= 0.95) {
+        ctaWrap.classList.add('visible');
+      } else {
+        ctaWrap.classList.remove('visible');
+      }
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
 }
 
 /* ── Footer year ──────────────────────────────────────────── */
