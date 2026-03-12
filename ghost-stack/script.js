@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initTileStrip();
   initPixelTitle();
   initProcessTimeline();
+  initBlogCarousel();
 });
 
 
@@ -449,6 +450,156 @@ function initProcessTimeline() {
     }
   }, { threshold: 0.1 });
   observer.observe(stepsWrap);
+}
+
+/* ── Blog coverflow (3D thumb-through) ────────────────────── */
+function initBlogCarousel() {
+  const carousel = document.getElementById('blog-carousel');
+  if (!carousel) return;
+
+  const realCards = Array.from(carousel.querySelectorAll('.blog-card'));
+  const prevBtn = document.querySelector('.blog-arrow--prev');
+  const nextBtn = document.querySelector('.blog-arrow--next');
+  const totalReal = realCards.length;
+
+  // Build a managed array of all items in DOM order.
+  // We keep PAD dummies on each side of the "active" real card at all times.
+  const PAD = 8;
+  const items = []; // { el, type: 'real'|'dummy' }
+
+  function createDummy() {
+    const d = document.createElement('div');
+    d.className = 'blog-card-dummy';
+    return d;
+  }
+
+  // Initial build: PAD dummies, then real cards, then PAD dummies
+  for (let i = 0; i < PAD; i++) {
+    const d = createDummy();
+    carousel.insertBefore(d, carousel.firstChild);
+  }
+  for (let i = 0; i < PAD; i++) {
+    const d = createDummy();
+    carousel.appendChild(d);
+  }
+
+  function rebuildItems() {
+    items.length = 0;
+    Array.from(carousel.children).forEach((el) => {
+      items.push({
+        el,
+        type: el.classList.contains('blog-card') ? 'real' : 'dummy',
+      });
+    });
+  }
+  rebuildItems();
+
+  // Track which real card index (0-based into realCards) is active
+  let activeIndex = 0;
+
+  // Layout constants
+  const ANGLE = 55;
+  const SPACING = 40;
+  const ACTIVE_GAP = 210;
+  const Z_STEP = -30;
+
+  function findActiveItemIndex() {
+    // Find the position of the active real card in the items array
+    let count = 0;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type === 'real') {
+        if (count === activeIndex) return i;
+        count++;
+      }
+    }
+    return 0;
+  }
+
+  function layout() {
+    const center = findActiveItemIndex();
+
+    items.forEach((item, i) => {
+      const offset = i - center;
+      const el = item.el;
+      const isActive = offset === 0;
+
+      if (isActive) {
+        el.style.transform = 'translateX(0) translateZ(0) rotateY(0deg)';
+        el.style.opacity = '1';
+        el.style.zIndex = 10;
+        el.classList.add('active');
+      } else {
+        const side = offset < 0 ? -1 : 1;
+        const dist = Math.abs(offset);
+        const tx = side * (ACTIVE_GAP + (dist - 1) * SPACING);
+        const ry = -side * ANGLE;
+        const tz = Z_STEP * dist;
+        const op = Math.max(0, 1 - dist * 0.05);
+
+        el.style.transform =
+          `translateX(${tx}px) translateZ(${tz}px) rotateY(${ry}deg)`;
+        el.style.opacity = op;
+        el.style.zIndex = Math.max(0, 10 - dist);
+        el.classList.remove('active');
+      }
+    });
+
+    // Never disable arrows — infinite scroll
+    if (prevBtn) prevBtn.disabled = false;
+    if (nextBtn) nextBtn.disabled = false;
+  }
+
+  function navigate(dir) {
+    // dir: +1 = next, -1 = prev
+    // Loop the real card index
+    activeIndex = ((activeIndex + dir) % totalReal + totalReal) % totalReal;
+
+    // Move a dummy from the trailing side to the leading side
+    if (dir > 0) {
+      // Going right: take a dummy from the left, add to the right
+      const first = carousel.firstElementChild;
+      if (first && first.classList.contains('blog-card-dummy')) {
+        carousel.removeChild(first);
+        carousel.appendChild(first);
+      }
+    } else {
+      // Going left: take a dummy from the right, add to the left
+      const last = carousel.lastElementChild;
+      if (last && last.classList.contains('blog-card-dummy')) {
+        carousel.removeChild(last);
+        carousel.insertBefore(last, carousel.firstChild);
+      }
+    }
+
+    rebuildItems();
+    layout();
+  }
+
+  // Click real cards to jump to them
+  realCards.forEach((card, i) => {
+    card.addEventListener('click', () => {
+      if (i === activeIndex) return;
+      const diff = i - activeIndex;
+      // Navigate step by step for smooth transition
+      navigate(diff > 0 ? 1 : -1);
+    });
+  });
+
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => navigate(-1));
+  }
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => navigate(1));
+  }
+
+  document.addEventListener('keydown', (e) => {
+    const rect = carousel.getBoundingClientRect();
+    if (rect.top > window.innerHeight || rect.bottom < 0) return;
+    if (e.key === 'ArrowLeft') navigate(-1);
+    if (e.key === 'ArrowRight') navigate(1);
+  });
+
+  layout();
 }
 
 /* ── Footer year ──────────────────────────────────────────── */
